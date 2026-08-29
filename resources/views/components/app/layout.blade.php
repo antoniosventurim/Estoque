@@ -190,7 +190,7 @@
                     <div class="h-5 w-px bg-mv-border"></div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="group flex items-center gap-1.5 rounded-lg bg-mv-danger-bg px-3 py-1.5 text-[13px] font-medium text-mv-danger transition-colors hover:bg-mv-danger hover:text-white" title="Sair">
+                        <button type="submit" class="group flex items-center gap-1.5 rounded-lg bg-mv-danger-solid px-3 py-1.5 text-[13px] font-medium text-white transition-colors hover:opacity-90" title="Sair">
                             <x-app.icon name="logout" :size="17" />
                             <span>Sair</span>
                         </button>
