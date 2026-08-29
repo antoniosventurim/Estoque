@@ -1,0 +1,165 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import 'tailwindcss';
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #0f0f0f;
+    color: #f0f0f0;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: #2e2e2e;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3d3d3d;
+}
+
+input,
+textarea,
+select {
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.mono {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Sidebar recolhida (modo ícones) no desktop */
+@media (min-width: 768px) {
+    body.sidebar-collapsed #app-sidebar {
+        width: 56px;
+        flex-basis: 56px;
+        transition: width 0.15s;
+    }
+
+    body.sidebar-collapsed #app-sidebar .sidebar-logo {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.sidebar-collapsed #app-sidebar .sidebar-logo-text,
+    body.sidebar-collapsed #app-sidebar .nav-label,
+    body.sidebar-collapsed #app-sidebar .sidebar-user-info,
+    body.sidebar-collapsed #app-sidebar .logout-label {
+        display: none;
+    }
+
+    body.sidebar-collapsed #app-sidebar nav a {
+        justify-content: center;
+        gap: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.sidebar-collapsed #app-sidebar nav a svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    body.sidebar-collapsed #app-sidebar .mb-1 {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.sidebar-collapsed #app-sidebar form button {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.sidebar-collapsed #app-sidebar .sidebar-collapse-toggle {
+        justify-content: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    body.sidebar-collapsed #app-sidebar .sidebar-collapse-toggle svg {
+        transform: rotate(180deg);
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Design tokens do estoque-layout */
+@theme {
+    --color-mv-bg: #0f0f0f;
+    --color-mv-surface: #1a1a1a;
+    --color-mv-surface2: #222222;
+    --color-mv-sidebar: #111111;
+    --color-mv-border: #2e2e2e;
+    --color-mv-border-hover: #3d3d3d;
+    --color-mv-accent: #c8102e;
+    --color-mv-accent-hover: #e0142f;
+    --color-mv-accent-dark: #8f0b20;
+    --color-mv-accent-soft: #c8102e22;
+    --color-mv-success: #34c45a;
+    --color-mv-success-solid: #1a6b35;
+    --color-mv-success-bg: #1a6b3522;
+    --color-mv-warning: #e09b2a;
+    --color-mv-warning-solid: #7a5200;
+    --color-mv-warning-bg: #7a520022;
+    --color-mv-danger: #e8334a;
+    --color-mv-danger-solid: #8f0b20;
+    --color-mv-danger-bg: #8f0b2022;
+    --color-mv-text: #f0f0f0;
+    --color-mv-text-secondary: #999999;
+    --color-mv-text-muted: #555555;
+}
+
+.dv-from,
+.dv-to {
+    margin-bottom: 0 !important;
+}
+
+#bulk-products input[type="checkbox"],
+#print-form input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 2px solid #4a4e53;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+}
+#bulk-products input[type="checkbox"]:checked,
+#print-form input[type="checkbox"]:checked {
+    background-color: #2563eb;
+    border-color: #2563eb;
+}
+
+[data-searchable-select] input:focus,
+[data-searchable-select] input:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+.dv-from .bw-input,
+.dv-to .bw-input {
+    border-width: 1px;
+    padding-block: 8px;
+}
