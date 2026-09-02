@@ -116,6 +116,7 @@ class MovimentoController extends Controller
             'before' => $before,
             'after' => $product->stock,
             'min_stock' => $product->min_stock,
+            'user' => auth()->user()->name,
         ]);
     }
 

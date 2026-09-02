@@ -43,16 +43,6 @@
                         :options="$products->map(fn ($p) => ['id' => $p->id, 'name' => $p->name])->values()->all()"
                     />
                 </div>
-                <div class="relative flex-1">
-                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-mv-text-muted">
-                        <x-app.icon name="scan" :size="18" />
-                    </div>
-                    <input
-                        name="barcode"
-                        placeholder="Ou escaneie o código de barras..."
-                        class="mono w-full rounded-md border border-mv-border bg-mv-surface2 py-2 pl-10 pr-3 text-[15px] text-mv-text outline-none placeholder:text-mv-text-muted"
-                    >
-                </div>
                 <button type="submit" class="rounded-md bg-mv-accent px-4 py-2.5 text-[14px] font-semibold text-white hover:bg-mv-accent-hover">Buscar</button>
             </form>
         </x-app.card>

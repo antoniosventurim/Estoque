@@ -14,7 +14,7 @@
         <form method="GET" action="{{ route('produtos.index') }}" class="flex flex-1 flex-wrap items-center gap-2.5">
             <div class="relative min-w-[240px] flex-1">
                 <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mv-text-muted"><x-app.icon name="search" :size="14" /></div>
-                <input type="text" name="q" value="{{ $search }}" placeholder="Buscar por nome, SKU ou código de barras..."
+                <input type="text" name="q" value="{{ $search }}" placeholder="Buscar por nome ou código de barras..."
                     class="w-full rounded-md border border-mv-border bg-mv-surface py-2 pl-8 pr-2.5 text-[14px] text-mv-text outline-none focus:border-blue-600">
             </div>
             <div class="relative w-[180px]">

@@ -1,7 +1,7 @@
 <x-app.layout>
     <x-app.page-header
         title="Entrada de Estoque"
-        subtitle="Escaneie o produto, confirme e registre a entrada"
+        subtitle="Busque o produto, confirme e registre a entrada"
         icon="arrow-up"
     />
 
@@ -25,6 +25,7 @@
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque anterior</p><p class="text-[14px] font-medium text-mv-text">{{ $success['before'] }} un</p></div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-mv-text">{{ $success['after'] }} un</p></div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-text">{{ $success['min_stock'] ?? 0 }} un</p></div>
+                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Adicionado por</p><p class="text-[14px] font-medium text-mv-text">{{ $success['user'] ?? '' }}</p></div>
                 </div>
             </x-app.card>
         @endif

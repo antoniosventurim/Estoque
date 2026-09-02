@@ -1,7 +1,7 @@
 <x-app.layout>
     <x-app.page-header
         title="Saída de Estoque"
-        subtitle="Escaneie o produto, confirme e registre a saída"
+        subtitle="Busque o produto, confirme e registre a saída"
         icon="arrow-down"
     />
 
