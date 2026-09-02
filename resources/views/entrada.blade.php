@@ -34,9 +34,9 @@
             <x-app.error-card title="Não foi possível registrar" :message="$error" />
         @endif
 
-        {{-- Passo 1: Escanear / Buscar --}}
+        {{-- Passo 1: Buscar produto --}}
         <x-app.card class="p-5">
-            <x-app.barcode-search :route="route('entrada')" form-id="entrada-search" />
+            <x-app.product-name-search :route="route('entrada')" :options="$products" />
         </x-app.card>
 
         {{-- Passo 2: Confirmar produto --}}
@@ -101,11 +101,6 @@
     </div>
 
     <script>
-        (function () {
-            const barcode = document.getElementById('barcode');
-            if (barcode) setTimeout(() => { barcode.value = ''; }, 1000);
-        })();
-
         (function () {
             const qty = document.getElementById('quantity');
             const preview = document.getElementById('entrada-new-stock');

@@ -17,8 +17,9 @@ class MovimentoController extends Controller
         [$product, $notFound] = $this->lookupProduct($request);
         $costCenters = $this->activeCostCenters();
         $employees = Employee::orderBy('name')->get();
+        $products = $this->productOptions();
 
-        return view('saida', compact('product', 'notFound', 'costCenters', 'employees'));
+        return view('saida', compact('product', 'notFound', 'costCenters', 'employees', 'products'));
     }
 
     private function activeCostCenters()
@@ -76,8 +77,9 @@ class MovimentoController extends Controller
     {
         [$product, $notFound] = $this->lookupProduct($request);
         $costCenters = $this->activeCostCenters();
+        $products = $this->productOptions();
 
-        return view('entrada', compact('product', 'notFound', 'costCenters'));
+        return view('entrada', compact('product', 'notFound', 'costCenters', 'products'));
     }
 
     public function entradaRegister(Request $request): RedirectResponse
@@ -128,6 +130,19 @@ class MovimentoController extends Controller
         $product = Product::where('barcode', $barcode)->first();
 
         return [$product, $product === null];
+    }
+
+    private function productOptions(): array
+    {
+        return Product::orderBy('name')
+            ->get()
+            ->map(fn (Product $p) => [
+                'id' => $p->barcode,
+                'name' => $p->name,
+                'sub' => 'Cod: '.$p->barcode,
+            ])
+            ->values()
+            ->all();
     }
 
     private function costCenterId(array $data): ?int

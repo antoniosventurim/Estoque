@@ -7,9 +7,22 @@ const PALETTE = [
 
 document.addEventListener('DOMContentLoaded', () => {
     initSearchableSelects();
+    initProductNameSearch();
     initOutflowCharts();
     initBarcodeLabels();
 });
+
+function initProductNameSearch() {
+    document.querySelectorAll('[data-product-name-search]').forEach((box) => {
+        box.addEventListener('searchable:select', (e) => {
+            const route = box.dataset.route;
+            const id = e.detail?.id;
+            if (!route || !id) return;
+
+            window.location = `${route}?barcode=${encodeURIComponent(id)}`;
+        });
+    });
+}
 
 function initOutflowCharts() {
     document.querySelectorAll('[data-outflow-chart]').forEach(async (canvas) => {

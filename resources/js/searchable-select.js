@@ -30,6 +30,11 @@ export function initSearchableSelects(root = document) {
             input.readOnly = true;
             if (clearBtn) clearBtn.classList.remove('hidden');
             optionsList.classList.add('hidden');
+
+            box.dispatchEvent(new CustomEvent('searchable:select', {
+                detail: { id: btn.dataset.value, label: btn.dataset.display },
+                bubbles: true,
+            }));
         };
 
         const clear = () => {
