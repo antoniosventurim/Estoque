@@ -75,36 +75,47 @@
                                 <p class="mt-1 text-2xl font-bold text-mv-text">{{ $selected->stock }}</p>
                             </div>
                             <div class="rounded-lg border border-mv-border bg-mv-surface2 p-4">
-                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Quantidade encontrada</p>
-                                <input id="found-qty" type="number" name="found_qty" min="0" value="{{ old('found_qty', $selected->stock) }}"
+                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Diferença (+/-)</p>
+                                <input id="adjustment" type="number" name="adjustment" value="0"
                                     class="mt-1 w-full rounded-md border border-mv-border bg-mv-bg px-2 py-2 text-center text-lg font-semibold text-mv-text outline-none">
+                                <p class="mt-1 text-[12px] text-mv-text-muted">+ sobra / - quebra</p>
                             </div>
-                            <div class="rounded-lg border p-4" id="diff-box" style="background: #222; border-color: #2e2e2e55">
-                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Diferença</p>
-                                <p id="diff-val" class="mt-1 text-2xl font-bold text-mv-text-muted">0</p>
+                            <div class="rounded-lg border p-4" id="preview-box" style="background: #222; border-color: #2e2e2e55">
+                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p>
+                                <p id="preview-val" class="mt-1 text-2xl font-bold text-mv-text-muted">{{ $selected->stock }}</p>
                             </div>
                         </div>
                         <script>
                             (() => {
                                 const system = {{ $selected->stock }};
-                                const input = document.getElementById('found-qty');
-                                const val = document.getElementById('diff-val');
-                                const box = document.getElementById('diff-box');
+                                const input = document.getElementById('adjustment');
+                                const val = document.getElementById('preview-val');
+                                const box = document.getElementById('preview-box');
                                 const paint = () => {
-                                    const d = (parseInt(input.value) || 0) - system;
-                                    val.textContent = (d > 0 ? '+' : '') + d;
-                                    const isDanger = d < 0, isWarn = d > 0, isOk = d === 0;
-                                    val.className = 'mt-1 text-2xl font-bold ' + (isDanger ? 'text-mv-danger' : isWarn ? 'text-mv-warning' : 'text-mv-success');
-                                    box.style.background = isDanger ? '#8f0b2022' : isWarn ? '#7a520022' : '#1a6b3522';
-                                    box.style.borderColor = (isDanger ? '#e8334a' : isWarn ? '#e09b2a' : '#34c45a') + '55';
+                                    const adj = parseInt(input.value) || 0;
+                                    const preview = Math.max(0, system + adj);
+                                    val.textContent = preview;
+                                    const isDanger = adj < 0, isWarn = adj > 0, isOk = adj === 0;
+                                    val.className = 'mt-1 text-2xl font-bold ' + (isDanger ? 'text-mv-danger' : isWarn ? 'text-mv-success' : 'text-mv-text-muted');
+                                    box.style.background = isDanger ? '#8f0b2022' : isWarn ? '#1a6b3522' : '#222';
+                                    box.style.borderColor = (isDanger ? '#e8334a' : isWarn ? '#34c45a' : '#2e2e2e') + '55';
                                 };
                                 input.addEventListener('input', paint);
                                 paint();
+
+                                const form = document.querySelector('form');
+                                const submitBtn = document.getElementById('submit-btn');
+                                if (form && submitBtn) {
+                                    form.addEventListener('submit', function () {
+                                        submitBtn.disabled = true;
+                                        submitBtn.textContent = 'Salvando...';
+                                    });
+                                }
                             })();
                         </script>
 
                         <div class="mt-5">
-                            <button type="submit" class="w-full rounded-lg bg-mv-accent px-6 py-3 text-sm font-semibold text-white hover:bg-mv-accent-hover sm:w-auto">
+                            <button type="submit" id="submit-btn" class="w-full rounded-lg bg-mv-accent px-6 py-3 text-sm font-semibold text-white hover:bg-mv-accent-hover sm:w-auto">
                                 Registrar Ajuste
                             </button>
                         </div>

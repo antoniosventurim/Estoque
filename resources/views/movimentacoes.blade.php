@@ -79,7 +79,13 @@
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $m->stock_before }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text">{{ $m->stock_after }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">
-                                {{ $m->type === 'in' ? ($m->user->name ?? '—') : ($m->employee->name ?? '—') }}
+                                @if ($m->type === 'in')
+                                    {{ $m->user->name ?? '—' }}
+                                @elseif ($m->type === 'adjust')
+                                    {{ $m->user->name ?? '—' }}
+                                @else
+                                    {{ $m->employee->name ?? '—' }}
+                                @endif
                             </td>
                             <td class="mono px-3.5 py-2.5 text-xs text-mv-text-secondary">{{ $m->created_at->format('d/m/Y H:i') }}</td>
                         </tr>

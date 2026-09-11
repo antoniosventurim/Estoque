@@ -139,9 +139,14 @@ class ProductController extends Controller
 
     protected function validated(Request $request): array
     {
+        $productId = $request->route('product')?->id;
+
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'barcode' => ['nullable', 'string', 'max:44'],
+            'barcode' => [
+                'nullable', 'string', 'max:44',
+                \Illuminate\Validation\Rule::unique('products', 'barcode')->ignore($productId),
+            ],
             'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:2048'],
             'category_id' => ['nullable', 'exists:categories,id'],
             'stock' => ['nullable', 'integer', 'min:0'],

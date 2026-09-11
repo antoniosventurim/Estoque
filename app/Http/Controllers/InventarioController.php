@@ -28,29 +28,41 @@ class InventarioController extends Controller
     {
         $data = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
-            'found_qty' => ['required', 'integer', 'min:0'],
+            'adjustment' => ['required', 'integer'],
         ]);
 
         $product = Product::findOrFail($data['product_id']);
-        $found = (int) $data['found_qty'];
-        $difference = $found - $product->stock;
+        $adjustment = (int) $data['adjustment'];
         $before = $product->stock;
+        $newStock = $before + $adjustment;
 
-        $product->update(['stock' => $found]);
+        if ($newStock < 0) {
+            return back()->withErrors([
+                'adjustment' => 'Ajuste não permitido. Estoque atual: ' . $before . '. Não é possível reduzir mais que ' . $before . ' unidades.',
+            ])->withInput();
+        }
 
-        if ($difference !== 0) {
+        $product->update(['stock' => $newStock]);
+
+        if ($adjustment !== 0) {
+            $lastCostCenter = Movement::where('product_id', $product->id)
+                ->whereNotNull('cost_center_id')
+                ->latest()
+                ->value('cost_center_id');
+
             Movement::create([
                 'product_id' => $product->id,
+                'cost_center_id' => $lastCostCenter,
                 'type' => Movement::TYPE_ADJUST,
-                'quantity' => abs($difference),
+                'quantity' => abs($adjustment),
                 'stock_before' => $before,
-                'stock_after' => $found,
+                'stock_after' => $newStock,
                 'user_id' => auth()->id(),
-                'note' => $difference > 0 ? 'Sobra em inventário' : 'Quebra/Falta em inventário',
+                'note' => $adjustment > 0 ? 'Sobra em inventário' : 'Quebra/Falta em inventário',
             ]);
         }
 
         return to_route('inventario', ['product_id' => $product->id])
-            ->with('success', 'Ajuste registrado.');
+            ->with('success', 'Ajuste registrado. Estoque: ' . $newStock . ' (' . ($adjustment > 0 ? '+' : '') . $adjustment . ')');
     }
 }

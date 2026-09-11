@@ -101,7 +101,7 @@
 
             {{-- Botões --}}
             <div class="mt-5 flex gap-2">
-                <x-app.btn type="submit" icon="check">{{ $product ? 'Salvar alterações' : 'Cadastrar Produto' }}</x-app.btn>
+                <x-app.btn type="submit" icon="check" id="submit-btn">{{ $product ? 'Salvar alterações' : 'Cadastrar Produto' }}</x-app.btn>
                 <x-app.btn as="a" href="{{ route('produtos.index') }}" variant="ghost">Cancelar</x-app.btn>
             </div>
         </form>
@@ -109,6 +109,15 @@
 
     <script>
         (function () {
+            const form = document.querySelector('form');
+            const submitBtn = document.getElementById('submit-btn');
+            if (form && submitBtn) {
+                form.addEventListener('submit', function () {
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Salvando...';
+                });
+            }
+
             const input = document.getElementById('image');
             const holder = document.getElementById('product-image-preview');
             const removeBtn = document.getElementById('remove-image');
