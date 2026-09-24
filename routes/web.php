@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\ListaCompraController;
 use App\Http\Controllers\MovimentacoesController;
 use App\Http\Controllers\MovimentoController;
 use App\Http\Controllers\ProductController;
@@ -49,6 +50,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Scanner: saída / entrada / inventário
     Route::get('/admin/saida', [MovimentoController::class, 'saida'])->name('saida');
     Route::post('/admin/saida', [MovimentoController::class, 'saidaRegister'])->name('saida.register');
+    Route::post('/admin/saida/batch', [MovimentoController::class, 'saidaBatch'])->name('saida.batch');
+    Route::get('/admin/saida/search', [MovimentoController::class, 'searchProduct'])->name('saida.search');
     Route::get('/admin/entrada', [MovimentoController::class, 'entrada'])->name('entrada');
     Route::post('/admin/entrada', [MovimentoController::class, 'entradaRegister'])->name('entrada.register');
     Route::get('/admin/inventario', [InventarioController::class, 'index'])->name('inventario');
@@ -57,6 +60,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     // Consultas
     Route::get('/admin/movimentacoes', [MovimentacoesController::class, 'index'])->name('movimentacoes');
     Route::get('/admin/relatorios', [RelatorioController::class, 'index'])->name('relatorios');
+    Route::get('/admin/lista-compra/export', [ListaCompraController::class, 'export'])->name('lista-compra.export');
 
     // Centros de custo
     Route::get('/admin/centros-custo', [CostCenterController::class, 'index'])->name('centros-custo.index');

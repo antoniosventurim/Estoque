@@ -86,7 +86,7 @@
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="text-xs font-bold text-mv-danger">{{ $p->stock }} / {{ $p->min_stock }} {{ $p->unit }}</span>
-                                <x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" />
+                                <x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" :max-stock="$p->max_stock" />
                             </div>
                         </div>
                     @endforeach

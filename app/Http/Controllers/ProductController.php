@@ -151,6 +151,8 @@ class ProductController extends Controller
             'category_id' => ['nullable', 'exists:categories,id'],
             'stock' => ['nullable', 'integer', 'min:0'],
             'min_stock' => ['nullable', 'integer', 'min:0'],
+            'max_stock' => ['nullable', 'integer', 'min:0'],
+            'note' => ['nullable', 'string', 'max:500'],
             'unit' => ['nullable', 'string', 'max:10'],
             'is_active' => ['nullable', 'boolean'],
         ]) + [

@@ -19,7 +19,7 @@ class ConfiguracoesController extends Controller
             'empresa_endereco' => $settings['empresa_endereco'] ?? '',
             'empresa_telefone' => $settings['empresa_telefone'] ?? '',
             'estoque_minimo_padrao' => $settings['estoque_minimo_padrao'] ?? '',
-            'alerta_estoque_acima_minimo' => $settings['alerta_estoque_acima_minimo'] ?? 50,
+            'alerta_estoque_acima_minimo' => $settings['alerta_estoque_acima_minimo'] ?? 30,
         ]);
     }
 

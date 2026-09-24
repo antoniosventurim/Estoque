@@ -1,6 +1,6 @@
-@props(['stock', 'minStock'])
+@props(['stock', 'minStock', 'maxStock' => 0])
 @php
-    $margin = (int) \App\Models\Setting::get('alerta_estoque_acima_minimo', 50);
+    $margin = (int) \App\Models\Setting::get('alerta_estoque_acima_minimo', 30);
     $warnThreshold = $minStock * (1 + $margin / 100);
 
     if ($stock == 0) {
@@ -12,6 +12,9 @@
     } elseif ($stock <= $warnThreshold) {
         $cls = 'bg-mv-warning-bg text-mv-warning';
         $label = 'Baixo';
+    } elseif ($maxStock > 0 && $stock > $maxStock) {
+        $cls = 'bg-purple-500/15 text-purple-400';
+        $label = 'Excesso';
     } else {
         $cls = 'bg-mv-success-bg text-mv-success';
         $label = 'Normal';

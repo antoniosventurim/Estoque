@@ -57,7 +57,7 @@
                     </div>
                 </div>
 
-                <div class="mb-4 grid grid-cols-2 gap-3">
+                <div class="mb-4 grid grid-cols-3 gap-3">
                     <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
                         <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque atual</p>
                         <p id="entrada-stock" data-value="{{ $product->stock }}" class="text-xl font-bold text-mv-text">{{ $product->stock }} <span class="text-[14px] font-normal text-mv-text-muted">un</span></p>
@@ -65,6 +65,10 @@
                     <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
                         <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p>
                         <p class="text-xl font-bold text-mv-warning">{{ $product->min_stock ?? 0 }} <span class="text-[14px] font-normal text-mv-text-muted">un</span></p>
+                    </div>
+                    <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
+                        <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque máximo</p>
+                        <p class="text-xl font-bold text-mv-accent">{{ $product->max_stock ?? 0 }} <span class="text-[14px] font-normal text-mv-text-muted">un</span></p>
                     </div>
                 </div>
 

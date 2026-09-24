@@ -47,7 +47,7 @@
             <table class="w-full border-collapse text-[14px]">
                 <thead>
                     <tr class="border-b border-mv-border bg-mv-surface2">
-                        @foreach (['#', '', 'Nome', 'Cód. Barras', 'Categoria', 'Estoque', 'Mínimo', 'Status', 'Ações'] as $h)
+                        @foreach (['#', '', 'Nome', 'Categoria', 'Estoque', 'Mínimo', 'Máximo', 'Status', 'Ações'] as $h)
                             <th class="whitespace-nowrap px-3.5 py-2.5 {{ $h === 'Ações' ? 'text-center' : 'text-left' }} text-[13px] font-medium uppercase tracking-wider text-mv-text-secondary">
                                 @if ($h === '#')
                                     <x-bladewind::checkbox name="select_all" title="Selecionar todos" class="select-all-check" add_clearing="false" />
@@ -62,13 +62,18 @@
                     @forelse ($products as $i => $p)
                         <tr class="border-b border-mv-border hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5"><x-bladewind::checkbox name="ids[]" :value="$p->id" class="row-checkbox" add_clearing="false" /></td>
-                            <td class="px-1 py-2.5"><div class="flex h-9 w-9 items-center justify-center overflow-hidden rounded-md bg-mv-surface2 border border-mv-border">@if($p->image)<img src="{{ asset('storage/'.$p->image) }}" alt="{{ $p->name }}" class="h-full w-full object-cover">@else<x-app.icon name="box" :size="15" class="text-mv-text-muted" />@endif</div></td>
+                            <td class="px-3.5 py-2.5">
+                                <div class="flex items-center gap-2.5">
+                                    <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-mv-surface2 border border-mv-border">@if($p->image)<img src="{{ asset('storage/'.$p->image) }}" alt="{{ $p->name }}" class="h-full w-full object-cover">@else<x-app.icon name="box" :size="15" class="text-mv-text-muted" />@endif</div>
+                                    @if($p->barcode)<span class="mono text-xs text-mv-text-secondary whitespace-nowrap">{{ $p->barcode }}</span>@endif
+                                </div>
+                            </td>
                             <td class="px-3.5 py-2.5 font-medium text-mv-text">{{ $p->name }}</td>
-                            <td class="mono px-3.5 py-2.5 text-xs text-mv-text-secondary">{{ $p->barcode }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $p->category->name ?? '—' }}</td>
                             <td class="px-3.5 py-2.5 font-semibold {{ $p->stock <= $p->min_stock ? 'text-mv-danger' : ($p->stock <= $p->min_stock * 1.5 ? 'text-mv-warning' : 'text-mv-text') }}">{{ $p->stock }} {{ $p->unit }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $p->min_stock }} {{ $p->unit }}</td>
-                            <td class="px-3.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" /></td>
+                            <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $p->max_stock }} {{ $p->unit }}</td>
+                            <td class="px-3.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" :max-stock="$p->max_stock" /></td>
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('produtos.edit', $p) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>

@@ -40,9 +40,9 @@
             <div class="flex items-start justify-between">
                 <div>
                     <p class="mb-1.5 text-[13px] font-medium uppercase tracking-wider text-mv-text-secondary">Estoque Baixo</p>
-                    <p class="text-[26px] font-bold leading-none text-mv-warning">{{ $lowStock->count() }}</p>
+                    <p class="text-[26px] font-bold leading-none text-mv-danger">{{ $lowStock->count() }}</p>
                 </div>
-                <x-app.icon name="warning" size="18" class="text-mv-warning opacity-70" />
+                <x-app.icon name="warning" size="18" class="text-mv-danger opacity-70" />
             </div>
         </x-app.card>
         <x-app.card class="p-4">
@@ -70,13 +70,19 @@
         <div class="flex items-center gap-2 border-b border-mv-border px-4.5 py-3.5">
             <span class="text-mv-warning"><x-app.icon name="warning" size="16" /></span>
             <h2 class="m-0 text-sm font-semibold text-mv-text">Produtos com Estoque Baixo</h2>
-            <span class="ml-auto rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">{{ $lowStock->count() }}</span>
+            @if ($lowStock->isNotEmpty())
+                <a href="{{ route('lista-compra.export') }}" class="inline-flex items-center gap-1.5 rounded-md bg-mv-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90">
+                    <x-app.icon name="paper" :size="13" />
+                    Baixar Lista de Compra
+                </a>
+            @endif
+            <span class="ml-auto rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">Total de Itens: {{ $lowStock->count() }}</span>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full border-collapse text-[14px]">
                 <thead>
                     <tr class="border-b border-mv-border">
-                        @foreach (['Produto', 'Código', 'Estoque Atual', 'Estoque Mínimo', 'Status'] as $h)
+                        @foreach (['Produto', 'Código', 'Estoque Atual', 'Estoque Mínimo', 'Estoque Máximo', 'Status'] as $h)
                             <th class="whitespace-nowrap px-4.5 py-2 text-left text-[13px] font-medium uppercase tracking-wider text-mv-text-secondary">{{ $h }}</th>
                         @endforeach
                     </tr>
@@ -88,10 +94,11 @@
                             <td class="mono px-4.5 py-2.5 text-xs text-mv-text-secondary">{{ $p->barcode }}</td>
                             <td class="px-4.5 py-2.5 font-semibold {{ $p->stock == 0 ? 'text-mv-danger' : 'text-mv-warning' }}">{{ $p->stock }} {{ $p->unit }}</td>
                             <td class="px-4.5 py-2.5 text-mv-text-secondary">{{ $p->min_stock }} {{ $p->unit }}</td>
-                            <td class="px-4.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" /></td>
+                            <td class="px-4.5 py-2.5 text-mv-text-secondary">{{ $p->max_stock }} {{ $p->unit }}</td>
+                            <td class="px-4.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" :max-stock="$p->max_stock" /></td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-4.5 py-8 text-center text-[14px] text-mv-text-muted">Nenhum produto com estoque baixo.</td></tr>
+                        <tr><td colspan="6" class="px-4.5 py-8 text-center text-[14px] text-mv-text-muted">Nenhum produto com estoque baixo.</td></tr>
                     @endforelse
                 </tbody>
             </table>
@@ -103,7 +110,7 @@
         <div class="flex items-center gap-2 border-b border-mv-border px-4.5 py-3.5">
             <span class="text-mv-warning"><x-app.icon name="chart" size="16" /></span>
             <h2 class="m-0 text-sm font-semibold text-mv-text">Próximos ao Estoque Mínimo</h2>
-            <span class="ml-auto rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">{{ $nearMinStock->count() }}</span>
+            <span class="ml-auto rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">Total de Itens: {{ $nearMinStock->count() }}</span>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full border-collapse text-[14px]">
@@ -121,7 +128,7 @@
                             <td class="mono px-4.5 py-2.5 text-xs text-mv-text-secondary">{{ $p->barcode }}</td>
                             <td class="px-4.5 py-2.5 font-semibold text-mv-warning">{{ $p->stock }} {{ $p->unit }}</td>
                             <td class="px-4.5 py-2.5 text-mv-text-secondary">{{ $p->min_stock }} {{ $p->unit }}</td>
-                            <td class="px-4.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" /></td>
+                            <td class="px-4.5 py-2.5"><x-app.stock-badge :stock="$p->stock" :min-stock="$p->min_stock" :max-stock="$p->max_stock" /></td>
                         </tr>
                     @empty
                         <tr><td colspan="5" class="px-4.5 py-8 text-center text-[14px] text-mv-text-muted">Nenhum produto próximo ao estoque mínimo.</td></tr>

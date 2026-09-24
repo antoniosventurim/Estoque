@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index(): View
     {
-        $alertMargin = (int) Setting::get('alerta_estoque_acima_minimo', 50);
+        $alertMargin = (int) Setting::get('alerta_estoque_acima_minimo', 30);
 
         $totalProducts = Product::count();
         $totalStock = Product::sum('stock');

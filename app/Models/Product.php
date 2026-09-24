@@ -19,6 +19,8 @@ class Product extends Model
         'category_id',
         'stock',
         'min_stock',
+        'max_stock',
+        'note',
         'unit',
         'is_active',
     ];
@@ -75,6 +77,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function unitModel(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class, 'unit', 'abbreviation');
+    }
+
     public function movements(): HasMany
     {
         return $this->hasMany(Movement::class);
@@ -95,5 +102,14 @@ class Product extends Model
         }
 
         return 'ok';
+    }
+
+    public function getQuantityToOrderAttribute(): int
+    {
+        if ($this->max_stock <= 0) {
+            return 0;
+        }
+
+        return max(0, $this->max_stock - $this->stock);
     }
 }

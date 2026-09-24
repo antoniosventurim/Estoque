@@ -14,48 +14,67 @@
             @csrf
             @if ($product)@method('PUT')@endif
 
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <div class="sm:col-span-2">
-                    <x-app.input label="Nome *" name="name" value="{{ old('name', $product->name ?? '') }}" placeholder="Nome do produto" required />
+            {{-- Seção: Informações do Produto --}}
+            <div class="mb-5">
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Informações do Produto</h3>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    <div class="sm:col-span-2">
+                        <x-app.input label="Nome *" name="name" value="{{ old('name', $product->name ?? '') }}" placeholder="Nome do produto" required />
+                    </div>
+                    <x-app.searchable-select
+                        label="Categoria"
+                        name="category_id"
+                        placeholder="Buscar categoria..."
+                        :selected="old('category_id', $product->category_id ?? '')"
+                        :selected-label="old('category_id', $product->category_id ?? '') ? ($categories->firstWhere('id', old('category_id', $product->category_id))->name ?? '') : ''"
+                        :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => 'Categoria'])->values()->all()"
+                    />
+                    <x-app.searchable-select
+                        label="Unidade de medida"
+                        name="unit"
+                        placeholder="Buscar unidade..."
+                        :selected="old('unit', $product->unit ?? 'un')"
+                        :selected-label="old('unit', $product->unit ?? 'un') ? ($units->firstWhere('abbreviation', old('unit', $product->unit ?? 'un'))?->name ?? '') : ''"
+                        :options="$units->map(fn ($u) => ['id' => $u->abbreviation, 'name' => $u->name, 'sub' => $u->abbreviation])->values()->all()"
+                    />
+                    <div class="sm:col-span-2">
+                        <label for="note" class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Observação</label>
+                        <textarea id="note" name="note" rows="2" maxlength="500" placeholder="Anotações sobre o produto..."
+                            class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2.5 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-border">{{ old('note', $product->note ?? '') }}</textarea>
+                    </div>
                 </div>
-
-                <x-app.searchable-select
-                    label="Categoria"
-                    name="category_id"
-                    placeholder="Buscar categoria..."
-                    :selected="old('category_id', $product->category_id ?? '')"
-                    :selected-label="old('category_id', $product->category_id ?? '') ? ($categories->firstWhere('id', old('category_id', $product->category_id))->name ?? '') : ''"
-                    :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => 'Categoria'])->values()->all()"
-                />
-
-                <x-app.searchable-select
-                    label="Unidade de medida"
-                    name="unit"
-                    placeholder="Buscar unidade..."
-                    :selected="old('unit', $product->unit ?? 'un')"
-                    :selected-label="old('unit', $product->unit ?? 'un') ? ($units->firstWhere('abbreviation', old('unit', $product->unit ?? 'un'))?->name ?? '') : ''"
-                    :options="$units->map(fn ($u) => ['id' => $u->abbreviation, 'name' => $u->name, 'sub' => $u->abbreviation])->values()->all()"
-                />
-
-                <x-app.input label="Estoque atual" name="stock" type="number" min="0" value="{{ old('stock', $product->stock ?? 0) }}" />
-                <x-app.input label="Estoque mínimo" name="min_stock" type="number" min="0" value="{{ old('min_stock', $product->min_stock ?? 0) }}" />
             </div>
 
-            {{-- Código de Barras + Imagem --}}
-            <div class="mt-4 flex flex-col gap-4 sm:flex-row">
-                @if ($product?->barcode)
+            {{-- Seção: Estoque --}}
+            <div class="mb-5">
+                <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Controle de Estoque</h3>
+                <div class="flex gap-4">
                     <div class="flex-1">
-                        <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Código de Barras</label>
-                        <div class="inline-flex flex-col items-center gap-1.5 rounded-lg border border-mv-border bg-mv-surface2 p-4">
-                            <img src="{{ route('produtos.barcode', $product) }}" alt="Código de barras" class="h-[50px]">
-                            <span class="mono text-xs text-mv-text-secondary">{{ $product->barcode }}</span>
-                        </div>
-                        <input type="hidden" name="barcode" value="{{ $product->barcode }}">
+                        @if ($product)
+                            <div>
+                                <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Estoque atual</label>
+                                <div class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2.5 text-[14px] font-semibold text-mv-text-secondary cursor-not-allowed">{{ $product->stock }}</div>
+                                <p class="mt-1 text-[12px] text-mv-text-muted">Utilize o Inventário para ajustar o estoque.</p>
+                                <input type="hidden" name="stock" value="{{ $product->stock }}">
+                            </div>
+                        @else
+                            <x-app.input label="Estoque atual" name="stock" type="number" min="0" value="{{ old('stock', 0) }}" />
+                        @endif
                     </div>
-                @endif
+                    <div class="flex-1">
+                        <x-app.input label="Estoque mínimo" name="min_stock" type="number" min="0" value="{{ old('min_stock', $product->min_stock ?? 0) }}" />
+                    </div>
+                    <div class="flex-1">
+                        <x-app.input label="Estoque máximo" name="max_stock" type="number" min="0" value="{{ old('max_stock', $product->max_stock ?? 0) }}" />
+                    </div>
+                </div>
+            </div>
 
-                <div class="flex-1">
-                    <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Imagem do produto</label>
+            {{-- Seção: Imagem + Código de Barras --}}
+            <div class="mb-5 flex flex-wrap gap-6">
+                {{-- Imagem --}}
+                <div class="flex-1 min-w-[280px]">
+                    <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Imagem do Produto</h3>
                     <div class="flex items-start gap-4">
                         <div class="flex h-24 w-24 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg border border-mv-border bg-mv-surface2">
                             @if ($product?->image)
@@ -85,10 +104,22 @@
                     </div>
                     <input type="hidden" name="remove_image" value="0" id="remove-image-flag">
                 </div>
+
+                {{-- Código de Barras --}}
+                @if ($product?->barcode)
+                    <div class="flex-1 min-w-[200px]">
+                        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Código de Barras</h3>
+                        <div class="inline-flex flex-col items-center gap-1.5 rounded-lg border border-mv-border bg-mv-surface2 p-4">
+                            <img src="{{ route('produtos.barcode', $product) }}" alt="Código de barras" class="h-[50px]">
+                            <span class="mono text-xs text-mv-text-secondary">{{ $product->barcode }}</span>
+                        </div>
+                        <input type="hidden" name="barcode" value="{{ $product->barcode }}">
+                    </div>
+                @endif
             </div>
 
             {{-- Status --}}
-            <div class="mt-4">
+            <div class="mb-5">
                 <x-bladewind::checkbox
                     name="is_active"
                     value="1"
@@ -100,7 +131,7 @@
             </div>
 
             {{-- Botões --}}
-            <div class="mt-5 flex gap-2">
+            <div class="flex gap-2 border-t border-mv-border pt-4">
                 <x-app.btn type="submit" icon="check" id="submit-btn">{{ $product ? 'Salvar alterações' : 'Cadastrar Produto' }}</x-app.btn>
                 <x-app.btn as="a" href="{{ route('produtos.index') }}" variant="ghost">Cancelar</x-app.btn>
             </div>

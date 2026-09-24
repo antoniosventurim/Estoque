@@ -6,20 +6,21 @@ use App\Models\CostCenter;
 use App\Models\Employee;
 use App\Models\Movement;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class MovimentoController extends Controller
 {
     public function saida(Request $request): View
     {
-        [$product, $notFound] = $this->lookupProduct($request);
         $costCenters = $this->activeCostCenters();
         $employees = Employee::orderBy('name')->get();
         $products = $this->productOptions();
 
-        return view('saida', compact('product', 'notFound', 'costCenters', 'employees', 'products'));
+        return view('saida', compact('costCenters', 'employees', 'products'));
     }
 
     private function activeCostCenters()
@@ -32,7 +33,7 @@ class MovimentoController extends Controller
         $data = $request->validate([
             'barcode' => ['required', 'string'],
             'quantity' => ['required', 'integer', 'min:1'],
-            'cost_center_id' => ['nullable', 'exists:cost_centers,id'],
+            'cost_center_id' => ['required', 'exists:cost_centers,id'],
             'employee_id' => ['required', 'exists:employees,id'],
         ]);
 
@@ -60,7 +61,7 @@ class MovimentoController extends Controller
             'stock_after' => $product->stock,
             'user_id' => auth()->id(),
             'employee_id' => $employee->id,
-            'cost_center_id' => $this->costCenterId($data),
+            'cost_center_id' => $data['cost_center_id'],
         ]);
 
         return redirect()->route('saida')->with('success', [
@@ -70,6 +71,81 @@ class MovimentoController extends Controller
             'after' => $product->stock,
             'min_stock' => $product->min_stock,
             'employee' => $employee->name,
+        ]);
+    }
+
+    public function saidaBatch(Request $request): RedirectResponse
+    {
+        $raw = $request->input('items', '[]');
+        $items = is_string($raw) ? json_decode($raw, true) : $raw;
+
+        if (! is_array($items) || count($items) === 0) {
+            return back()->with('error', 'Adicione pelo menos um item à lista.');
+        }
+
+        $request->merge(['items' => $items]);
+
+        $data = $request->validate([
+            'items' => ['required', 'array', 'min:1'],
+            'items.*.barcode' => ['required', 'string'],
+            'items.*.quantity' => ['required', 'integer', 'min:1'],
+            'cost_center_id' => ['required', 'exists:cost_centers,id'],
+            'employee_id' => ['required', 'exists:employees,id'],
+        ]);
+
+        $employee = Employee::findOrFail((int) $data['employee_id']);
+        $costCenterId = $this->costCenterId($data);
+        $results = [];
+        $errors = [];
+
+        DB::transaction(function () use ($data, $employee, $costCenterId, &$results, &$errors) {
+            foreach ($data['items'] as $item) {
+                $product = Product::where('barcode', $item['barcode'])->first();
+
+                if (! $product) {
+                    $errors[] = "Produto com código {$item['barcode']} não encontrado.";
+                    continue;
+                }
+
+                $quantity = (int) $item['quantity'];
+                $before = $product->stock;
+
+                if ($quantity > $before) {
+                    $errors[] = "{$product->name}: estoque insuficiente ({$before} disponível).";
+                    continue;
+                }
+
+                $product->update(['stock' => $before - $quantity]);
+
+                Movement::create([
+                    'product_id' => $product->id,
+                    'type' => Movement::TYPE_OUT,
+                    'quantity' => $quantity,
+                    'stock_before' => $before,
+                    'stock_after' => $product->stock,
+                    'user_id' => auth()->id(),
+                    'employee_id' => $employee->id,
+                    'cost_center_id' => $costCenterId,
+                ]);
+
+                $results[] = [
+                    'name' => $product->name,
+                    'qty' => $quantity,
+                    'before' => $before,
+                    'after' => $product->stock,
+                    'min_stock' => $product->min_stock,
+                ];
+            }
+        });
+
+        if (! empty($errors)) {
+            return back()->with('error', implode(' ', $errors));
+        }
+
+        return redirect()->route('saida')->with('success_batch', [
+            'items' => $results,
+            'employee' => $employee->name,
+            'count' => count($results),
         ]);
     }
 
@@ -135,12 +211,15 @@ class MovimentoController extends Controller
 
     private function productOptions(): array
     {
-        return Product::orderBy('name')
+        return Product::with('unitModel')->orderBy('name')
             ->get()
             ->map(fn (Product $p) => [
                 'id' => $p->barcode,
                 'name' => $p->name,
                 'sub' => 'Cod: '.$p->barcode,
+                'stock' => $p->stock,
+                'min_stock' => $p->min_stock,
+                'unit' => $p->unitModel?->name ?? $p->unit,
             ])
             ->values()
             ->all();
@@ -151,5 +230,34 @@ class MovimentoController extends Controller
         $id = $data['cost_center_id'] ?? null;
 
         return $id !== null && $id !== '' ? (int) $id : null;
+    }
+
+    public function searchProduct(Request $request): JsonResponse
+    {
+        $query = $request->input('q', '');
+
+        if (strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $products = Product::with('unitModel')
+            ->where('is_active', true)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                  ->orWhere('barcode', 'like', "%{$query}%");
+            })
+            ->limit(10)
+            ->get()
+            ->map(fn (Product $p) => [
+                'id' => $p->id,
+                'name' => $p->name,
+                'barcode' => $p->barcode,
+                'stock' => $p->stock,
+                'min_stock' => $p->min_stock,
+                'unit' => $p->unitModel?->name ?? $p->unit,
+                'category' => $p->category?->name,
+            ]);
+
+        return response()->json($products);
     }
 }
