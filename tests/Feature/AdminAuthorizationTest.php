@@ -16,15 +16,15 @@ class AdminAuthorizationTest extends TestCase
 
         $this->actingAs($user)
             ->get('/admin/produtos')
-            ->assertRedirect(route('dashboard'));
+            ->assertForbidden();
 
         $this->actingAs($user)
             ->get('/admin/saida')
-            ->assertRedirect(route('dashboard'));
+            ->assertForbidden();
 
         $this->actingAs($user)
             ->get('/admin/usuarios')
-            ->assertRedirect(route('dashboard'));
+            ->assertForbidden();
     }
 
     public function test_admin_can_access_admin_area(): void

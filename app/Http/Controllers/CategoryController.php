@@ -63,7 +63,6 @@ class CategoryController extends Controller
     {
         return $request->validate([
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . optional($category)->id],
-            'color' => ['nullable', 'string', 'max:7'],
         ]);
     }
 }

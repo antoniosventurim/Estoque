@@ -71,9 +71,9 @@
             <span class="text-mv-warning"><x-app.icon name="warning" size="16" /></span>
             <h2 class="m-0 text-sm font-semibold text-mv-text">Produtos com Estoque Baixo</h2>
             @if ($lowStock->isNotEmpty())
-                <a href="{{ route('lista-compra.export') }}" class="inline-flex items-center gap-1.5 rounded-md bg-mv-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90">
+                <a href="{{ route('lista-compra.index') }}" class="inline-flex items-center gap-1.5 rounded-md bg-mv-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90">
                     <x-app.icon name="paper" :size="13" />
-                    Baixar Lista de Compra
+                    Ver Lista de Compra
                 </a>
             @endif
             <span class="ml-auto rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">Total de Itens: {{ $lowStock->count() }}</span>

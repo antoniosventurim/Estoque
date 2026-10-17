@@ -25,15 +25,39 @@
             <x-app.input label="Senha" name="password" type="password" placeholder="Mínimo 8 caracteres" :required="! $user" />
             <x-app.input label="Confirmar senha" name="password_confirmation" type="password" placeholder="Repita a senha" />
 
-            <div class="flex items-end sm:col-span-2">
-                <x-bladewind::checkbox
-                    name="is_admin"
-                    value="1"
-                    label="Administrador"
-                    color="blue"
-                    add_clearing="false"
-                    :checked="(bool) old('is_admin', $user->is_admin ?? false)"
-                />
+            <div class="sm:col-span-2">
+                <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Nível de acesso</label>
+                <div class="flex flex-wrap items-center gap-2">
+                    <label class="cursor-pointer select-none">
+                        <input type="checkbox" name="is_admin" value="1" class="peer sr-only" {{ (bool) old('is_admin', $user->is_admin ?? false) ? 'checked' : '' }}>
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white/70 transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
+                            <x-app.icon name="check" :size="12" />
+                            Acesso total (Administrador)
+                        </span>
+                    </label>
+                </div>
+                <p class="mt-1.5 text-xs text-mv-text-muted">Com acesso total o usuário ignora as permissões dos perfis abaixo.</p>
+            </div>
+
+            <div class="sm:col-span-2">
+                <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Perfis de acesso</label>
+                <div class="flex flex-wrap gap-2">
+                    @forelse ($roles as $role)
+                        <label class="cursor-pointer select-none">
+                            <input type="checkbox" name="roles[]" value="{{ $role->name }}" class="peer sr-only" {{ $selectedRoles->contains($role->name) ? 'checked' : '' }}>
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white/70 transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
+                                <x-app.icon name="check" :size="12" />
+                                {{ $role->name }}
+                                <span class="opacity-70">· {{ $role->permissions->count() }} permissões</span>
+                            </span>
+                        </label>
+                    @empty
+                        <p class="rounded-md border border-mv-border bg-mv-surface2 px-3 py-2 text-[13px] text-mv-text-muted">
+                            Nenhum perfil cadastrado ainda — crie em Configurações → Permissões.
+                        </p>
+                    @endforelse
+                </div>
+                <p class="mt-1.5 text-xs text-mv-text-muted">O usuário terá a união das permissões dos perfis marcados. Clique no chip para marcar.</p>
             </div>
 
             <div class="flex gap-2 sm:col-span-2">

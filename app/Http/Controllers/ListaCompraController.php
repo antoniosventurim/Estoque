@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Exports\ListaCompraExport;
 use App\Models\Product;
+use App\Models\PurchaseRequest;
+use App\Models\PurchaseRequestItem;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -17,7 +19,11 @@ class ListaCompraController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('lista-compra', compact('products'));
+        $openProductIds = PurchaseRequestItem::whereHas('request', function ($q) {
+            $q->whereIn('status', [PurchaseRequest::STATUS_PENDING, PurchaseRequest::STATUS_PARTIAL]);
+        })->pluck('product_id');
+
+        return view('lista-compra', ['products' => $products, 'pendingProductIds' => $openProductIds]);
     }
 
     public function export(): BinaryFileResponse

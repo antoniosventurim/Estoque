@@ -10,15 +10,9 @@ class ProdutosDemoSeeder extends Seeder
 {
     public function run(): void
     {
-        $cats = [
-            ['Escritório', '#6366f1'],
-            ['Eletrônicos', '#10b981'],
-            ['Limpeza', '#f59e0b'],
-            ['Alimentos', '#f43f5e'],
-            ['Ferramentas', '#0ea5e9'],
-        ];
-        foreach ($cats as [$n, $c]) {
-            Category::updateOrCreate(['name' => $n], ['color' => $c]);
+        $cats = ['Escritório', 'Eletrônicos', 'Limpeza', 'Alimentos', 'Ferramentas'];
+        foreach ($cats as $n) {
+            Category::updateOrCreate(['name' => $n]);
         }
 
         $data = [

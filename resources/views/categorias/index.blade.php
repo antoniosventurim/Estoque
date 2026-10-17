@@ -27,7 +27,7 @@
             <table class="w-full border-collapse text-[14px]">
                 <thead>
                     <tr class="border-b border-mv-border bg-mv-surface2">
-                        @foreach (['#', 'Nome', 'Cor', 'Produtos', 'Ações'] as $h)
+                        @foreach (['#', 'Nome', 'Produtos', 'Ações'] as $h)
                             <th class="whitespace-nowrap px-3.5 py-2.5 {{ $h === 'Ações' ? 'text-center' : 'text-left' }} text-[13px] font-medium uppercase tracking-wider text-mv-text-secondary">{{ $h }}</th>
                         @endforeach
                     </tr>
@@ -37,13 +37,6 @@
                         <tr class="border-b border-mv-border hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $categories->firstItem() + $i }}</td>
                             <td class="px-3.5 py-2.5 font-medium text-mv-text">{{ $c->name }}</td>
-                            <td class="px-3.5 py-2.5">
-                                @if ($c->color)
-                                    <span class="inline-block h-4 w-4 rounded" style="background: {{ $c->color }}"></span>
-                                @else
-                                    <span class="text-mv-text-muted">—</span>
-                                @endif
-                            </td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $c->products_count }}</td>
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
@@ -56,7 +49,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="px-3.5 py-10 text-center text-[14px] text-mv-text-muted">Nenhuma categoria encontrada.</td></tr>
+                        <tr><td colspan="4" class="px-3.5 py-10 text-center text-[14px] text-mv-text-muted">Nenhuma categoria encontrada.</td></tr>
                     @endforelse
                 </tbody>
             </table>

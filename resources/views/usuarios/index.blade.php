@@ -28,7 +28,7 @@
                         @php
                             $parts = explode(' ', trim($u->name));
                             $init = strtoupper(Str::substr($parts[0], 0, 1) . Str::substr($parts[1] ?? '', 0, 1));
-                            $role = $u->is_admin ? 'Administrador' : 'Operador';
+                            $roleNames = $u->roles->pluck('name');
                         @endphp
                         <tr class="border-b border-mv-border">
                             <td class="px-4 py-3">
@@ -38,7 +38,18 @@
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-mv-text-secondary">{{ $u->email }}</td>
-                            <td class="px-4 py-3 text-mv-text-secondary">{{ $role }}</td>
+                            <td class="px-4 py-3 text-mv-text-secondary">
+                                @if ($u->is_admin)
+                                    <span class="rounded-full bg-mv-accent-soft px-2 py-0.5 text-[12px] font-semibold text-mv-accent-hover">Administrador (acesso total)</span>
+                                @endif
+                                @forelse ($roleNames as $name)
+                                    <span class="ml-1 rounded-full bg-mv-surface2 px-2 py-0.5 text-[12px] font-semibold text-mv-text-secondary">{{ $name }}</span>
+                                @empty
+                                    @if (! $u->is_admin)
+                                        <span class="text-mv-text-muted">Sem perfil</span>
+                                    @endif
+                                @endforelse
+                            </td>
                             <td class="px-4 py-3">
                                 <span class="rounded bg-mv-success-bg px-2 py-0.5 text-[13px] font-medium text-mv-success">Ativo</span>
                             </td>

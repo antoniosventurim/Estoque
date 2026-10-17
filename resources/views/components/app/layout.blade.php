@@ -11,10 +11,12 @@
         ['label' => 'Saída de Estoque', 'icon' => 'arrow-down', 'route' => 'saida', 'active' => request()->routeIs('saida')],
         ['label' => 'Movimentações', 'icon' => 'list', 'route' => 'movimentacoes', 'active' => request()->routeIs('movimentacoes')],
         ['label' => 'Inventário', 'icon' => 'clipboard', 'route' => 'inventario', 'active' => request()->routeIs('inventario')],
+        ['label' => 'Lista de Compra', 'icon' => 'paper', 'route' => 'lista-compra.index', 'active' => request()->routeIs('lista-compra.*')],
+        ['label' => 'Solicitações', 'icon' => 'check', 'route' => 'solicitacoes.index', 'active' => request()->routeIs('solicitacoes.*')],
         ['label' => 'Relatórios', 'icon' => 'chart', 'route' => 'relatorios', 'active' => request()->routeIs('relatorios')],
     ];
 
-    $configActive = request()->routeIs('configuracoes') || request()->routeIs('categorias.*') || request()->routeIs('centros-custo.*') || request()->routeIs('usuarios') || request()->routeIs('funcionarios.*') || request()->routeIs('unidades.*') || request()->routeIs('etiquetas.*');
+    $configActive = request()->routeIs('configuracoes') || request()->routeIs('categorias.*') || request()->routeIs('centros-custo.*') || request()->routeIs('usuarios') || request()->routeIs('funcionarios.*') || request()->routeIs('unidades.*') || request()->routeIs('etiquetas.*') || request()->routeIs('roles.*');
     $configOpen = $configActive;
 
     $titles = [
@@ -25,9 +27,15 @@
         'movimentacoes' => 'Movimentações',
         'centros-custo.index' => 'Centros de Custo',
         'inventario' => 'Inventário',
+        'lista-compra.index' => 'Lista de Compra',
+        'solicitacoes.index' => 'Solicitações de Compra',
+        'solicitacoes.show' => 'Detalhe da Solicitação',
         'relatorios' => 'Relatórios',
         'usuarios' => 'Usuários',
         'configuracoes' => 'Configurações',
+        'roles.index' => 'Permissões e Perfis',
+        'roles.create' => 'Novo Perfil',
+        'roles.edit' => 'Editar Perfil',
         'etiquetas.index' => 'Etiquetas',
     ];
     $pageTitle = $title ?? ($titles[request()->route()?->getName() ?? 'dashboard'] ?? 'Estoque');
@@ -146,6 +154,16 @@
                         >
                             <x-app.icon name="ruler" :size="13" />
                             <span class="nav-label">Unidades de Medida</span>
+                        </a>
+                        <a href="{{ route('roles.index') }}"
+                            @class([
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('roles.*'),
+                                'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('roles.*'),
+                            ])
+                        >
+                            <x-app.icon name="check" :size="13" />
+                            <span class="nav-label">Permissões</span>
                         </a>
                         <a href="{{ route('etiquetas.index') }}"
                             @class([
