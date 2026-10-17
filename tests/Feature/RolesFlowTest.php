@@ -54,7 +54,10 @@ class RolesFlowTest extends TestCase
     {
         $user = User::factory()->create(['is_admin' => false]);
 
-        $this->actingAs($user)->get(route('produtos.index'))->assertForbidden();
+        $this->actingAs($user)->get(route('produtos.index'))
+            ->assertForbidden()
+            ->assertSee('Sem permissão')
+            ->assertSee('Você não tem permissão para acessar esta página');
         $this->actingAs($user)->get(route('saida'))->assertForbidden();
         $this->actingAs($user)->get(route('roles.index'))->assertForbidden();
     }
