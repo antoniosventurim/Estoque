@@ -8,7 +8,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Movement extends Model
 {
     public const TYPE_IN = 'in';
+
     public const TYPE_OUT = 'out';
+
     public const TYPE_ADJUST = 'adjust';
 
     protected $fillable = [
@@ -41,5 +43,4 @@ class Movement extends Model
     {
         return $this->belongsTo(Employee::class);
     }
-
 }

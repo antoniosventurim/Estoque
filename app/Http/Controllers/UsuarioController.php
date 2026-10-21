@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DomainException;
+use App\Http\Requests\UsuarioRequest;
 use App\Models\User;
+use App\Services\UsuarioService;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class UsuarioController extends Controller
 {
+    public function __construct(private readonly UsuarioService $usuarios) {}
+
     public function index(): View
     {
         $users = User::with('roles')->orderBy('name')->get();
@@ -20,15 +25,17 @@ class UsuarioController extends Controller
     {
         return view('usuarios.form', [
             'user' => null,
-            'roles' => \Spatie\Permission\Models\Role::orderBy('name')->get(),
+            'roles' => Role::orderBy('name')->get(),
             'selectedRoles' => collect(),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(UsuarioRequest $request): RedirectResponse
     {
-        $user = User::create($this->validated($request));
-        $user->syncRoles($request->input('roles', []));
+        $this->usuarios->create(
+            $request->validated(),
+            $request->input('roles', [])
+        );
 
         return redirect()->route('usuarios')->with('status', 'Usuário cadastrado.');
     }
@@ -37,51 +44,30 @@ class UsuarioController extends Controller
     {
         return view('usuarios.form', [
             'user' => $user,
-            'roles' => \Spatie\Permission\Models\Role::orderBy('name')->get(),
+            'roles' => Role::orderBy('name')->get(),
             'selectedRoles' => collect(old('roles', $user->roles->pluck('name'))),
         ]);
     }
 
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UsuarioRequest $request, User $user): RedirectResponse
     {
-        $user->update($this->validated($request, false));
-        $user->syncRoles($request->input('roles', []));
+        $this->usuarios->update(
+            $user,
+            $request->validated(),
+            $request->input('roles', [])
+        );
 
         return redirect()->route('usuarios')->with('status', 'Usuário atualizado.');
     }
 
     public function destroy(User $user): RedirectResponse
     {
-        if ($user->id === auth()->id()) {
-            return back()->with('error', 'Você não pode excluir o próprio usuário.');
+        try {
+            $this->usuarios->destroy($user);
+        } catch (DomainException $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        $user->delete();
 
         return redirect()->route('usuarios')->with('status', 'Usuário excluído.');
-    }
-
-    protected function validated(Request $request, bool $creating = true): array
-    {
-        $passwordRules = $creating
-            ? ['required', 'confirmed', 'min:8']
-            : ['nullable', 'confirmed', 'min:8'];
-
-        $data = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$request->route('user')?->id],
-            'password' => $passwordRules,
-            'is_admin' => ['nullable', 'boolean'],
-            'roles' => ['nullable', 'array'],
-            'roles.*' => ['string', 'exists:roles,name'],
-        ]);
-
-        $data['is_admin'] = $request->boolean('is_admin');
-
-        if (! $creating && empty($data['password'])) {
-            unset($data['password']);
-        }
-
-        return $data;
     }
 }

@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class PurchaseRequest extends Model
 {
     public const STATUS_PENDING = 'pending';
+
     public const STATUS_PARTIAL = 'partial';
+
     public const STATUS_DELIVERED = 'delivered';
 
     protected $fillable = [

@@ -16,5 +16,4 @@ class CostCenter extends Model
     {
         return $this->hasMany(Movement::class);
     }
-
 }

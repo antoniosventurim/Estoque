@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CategoryRequest;
 use App\Models\Category;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,11 +30,9 @@ class CategoryController extends Controller
         return view('categorias.form', ['category' => null]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CategoryRequest $request): RedirectResponse
     {
-        $data = $this->validated($request);
-
-        Category::create($data);
+        Category::create($request->validated());
 
         return redirect()->route('categorias.index')->with('status', 'Categoria cadastrada.');
     }
@@ -43,11 +42,9 @@ class CategoryController extends Controller
         return view('categorias.form', compact('category'));
     }
 
-    public function update(Request $request, Category $category): RedirectResponse
+    public function update(CategoryRequest $request, Category $category): RedirectResponse
     {
-        $data = $this->validated($request, $category);
-
-        $category->update($data);
+        $category->update($request->validated());
 
         return redirect()->route('categorias.index')->with('status', 'Categoria atualizada.');
     }
@@ -57,12 +54,5 @@ class CategoryController extends Controller
         $category->delete();
 
         return redirect()->route('categorias.index')->with('status', 'Categoria excluída.');
-    }
-
-    protected function validated(Request $request, ?Category $category = null): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:categories,name,' . optional($category)->id],
-        ]);
     }
 }

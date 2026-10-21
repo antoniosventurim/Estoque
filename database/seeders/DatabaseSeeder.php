@@ -21,9 +21,9 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             UnitSeeder::class,
-            CostCenterSeeder::class,
-            EmployeeSeeder::class,
-            ProdutosDemoSeeder::class,
+            // CostCenterSeeder::class,
+            // EmployeeSeeder::class,
+            // ProdutosDemoSeeder::class,
         ]);
     }
 }

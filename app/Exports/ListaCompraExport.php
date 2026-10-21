@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 class ListaCompraExport implements FromCollection, WithHeadings, WithMapping, WithStyles
 {
     private int $row = 1;
+
     public function collection(): Collection
     {
         return Product::with('category', 'unitModel')

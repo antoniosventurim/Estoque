@@ -56,7 +56,7 @@ class RolesFlowTest extends TestCase
 
         $this->actingAs($user)->get(route('produtos.index'))
             ->assertForbidden()
-            ->assertSee('Sem permissão')
+            ->assertSee('Acesso negado')
             ->assertSee('Você não tem permissão para acessar esta página');
         $this->actingAs($user)->get(route('saida'))->assertForbidden();
         $this->actingAs($user)->get(route('roles.index'))->assertForbidden();

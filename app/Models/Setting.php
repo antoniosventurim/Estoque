@@ -27,5 +27,4 @@ class Setting extends Model
             static::set($key, $value);
         }
     }
-
 }

@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\DomainException;
+use App\Http\Requests\RoleRequest;
+use App\Services\RoleService;
 use App\Support\PermissionMap;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
+    public function __construct(private readonly RoleService $roles) {}
+
     public function index(): View
     {
         $roles = Role::withCount('permissions')->orderBy('name')->get();
@@ -28,12 +32,11 @@ class RoleController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(RoleRequest $request): RedirectResponse
     {
-        $data = $this->validated($request);
+        $data = $request->validated();
 
-        $role = Role::create(['name' => $data['name']]);
-        $role->syncPermissions($data['permissions'] ?? []);
+        $this->roles->create($data['name'], $data['permissions'] ?? []);
 
         return redirect()->route('roles.index')->with('status', 'Perfil criado com sucesso.');
     }
@@ -48,33 +51,23 @@ class RoleController extends Controller
         ]);
     }
 
-    public function update(Request $request, Role $role): RedirectResponse
+    public function update(RoleRequest $request, Role $role): RedirectResponse
     {
-        $data = $this->validated($request, $role);
+        $data = $request->validated();
 
-        $role->update(['name' => $data['name']]);
-        $role->syncPermissions($data['permissions'] ?? []);
+        $this->roles->update($role, $data['name'], $data['permissions'] ?? []);
 
         return redirect()->route('roles.index')->with('status', 'Perfil atualizado.');
     }
 
     public function destroy(Role $role): RedirectResponse
     {
-        if ($role->name === 'Administrador') {
-            return back()->with('error', 'O perfil Administrador não pode ser excluído.');
+        try {
+            $this->roles->destroy($role);
+        } catch (DomainException $e) {
+            return back()->with('error', $e->getMessage());
         }
 
-        $role->delete();
-
         return redirect()->route('roles.index')->with('status', 'Perfil excluído.');
-    }
-
-    protected function validated(Request $request, ?Role $role = null): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:roles,name,'.optional($role)->id],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['string', 'exists:permissions,name'],
-        ]);
     }
 }

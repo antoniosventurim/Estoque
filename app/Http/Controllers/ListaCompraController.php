@@ -28,6 +28,6 @@ class ListaCompraController extends Controller
 
     public function export(): BinaryFileResponse
     {
-        return Excel::download(new ListaCompraExport, 'lista-compra-' . now()->format('d-m-Y') . '.xlsx');
+        return Excel::download(new ListaCompraExport, 'lista-compra-'.now()->format('d-m-Y').'.xlsx');
     }
 }

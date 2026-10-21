@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UnitRequest;
 use App\Models\Unit;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class UnitController extends Controller
@@ -21,11 +21,9 @@ class UnitController extends Controller
         return view('unidades.form', ['unit' => null]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(UnitRequest $request): RedirectResponse
     {
-        $data = $this->validated($request);
-
-        Unit::create($data);
+        Unit::create($request->validated());
 
         return redirect()->route('unidades.index')->with('status', 'Unidade cadastrada.');
     }
@@ -35,11 +33,9 @@ class UnitController extends Controller
         return view('unidades.form', compact('unit'));
     }
 
-    public function update(Request $request, Unit $unit): RedirectResponse
+    public function update(UnitRequest $request, Unit $unit): RedirectResponse
     {
-        $data = $this->validated($request, $unit);
-
-        $unit->update($data);
+        $unit->update($request->validated());
 
         return redirect()->route('unidades.index')->with('status', 'Unidade atualizada.');
     }
@@ -49,13 +45,5 @@ class UnitController extends Controller
         $unit->delete();
 
         return redirect()->route('unidades.index')->with('status', 'Unidade excluída.');
-    }
-
-    protected function validated(Request $request, ?Unit $unit = null): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'abbreviation' => ['required', 'string', 'max:10', 'unique:units,abbreviation,'.optional($unit)->id],
-        ]);
     }
 }

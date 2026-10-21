@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\EmployeeRequest;
 use App\Models\Employee;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,9 +30,9 @@ class EmployeeController extends Controller
         return view('funcionarios.form', ['employee' => null]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(EmployeeRequest $request): RedirectResponse
     {
-        Employee::create($this->validated($request));
+        Employee::create($request->validated());
 
         return redirect()->route('funcionarios.index')->with('status', 'Funcionário cadastrado.');
     }
@@ -41,9 +42,9 @@ class EmployeeController extends Controller
         return view('funcionarios.form', compact('employee'));
     }
 
-    public function update(Request $request, Employee $employee): RedirectResponse
+    public function update(EmployeeRequest $request, Employee $employee): RedirectResponse
     {
-        $employee->update($this->validated($request, $employee));
+        $employee->update($request->validated());
 
         return redirect()->route('funcionarios.index')->with('status', 'Funcionário atualizado.');
     }
@@ -53,12 +54,5 @@ class EmployeeController extends Controller
         $employee->delete();
 
         return redirect()->route('funcionarios.index')->with('status', 'Funcionário excluído.');
-    }
-
-    protected function validated(Request $request, ?Employee $employee = null): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255', 'unique:employees,name,'.optional($employee)->id],
-        ]);
     }
 }

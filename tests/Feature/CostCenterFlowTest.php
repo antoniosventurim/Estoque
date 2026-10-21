@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\CostCenter;
+use App\Models\Employee;
 use App\Models\Movement;
 use App\Models\Product;
 use App\Models\User;
@@ -43,13 +44,14 @@ class CostCenterFlowTest extends TestCase
     public function test_saida_registers_with_cost_center(): void
     {
         $costCenter = CostCenter::create(['name' => 'Medicina', 'type' => 'curso', 'code' => 'MED']);
+        $employee = Employee::create(['name' => 'Funcionário Teste']);
 
         $this->actingAs($this->user)
             ->post('/admin/saida', [
                 'barcode' => $this->product->barcode,
                 'quantity' => 1,
                 'cost_center_id' => $costCenter->id,
-                'user_id' => $this->user->id,
+                'employee_id' => $employee->id,
             ])
             ->assertRedirect(route('saida'));
 
@@ -57,6 +59,7 @@ class CostCenterFlowTest extends TestCase
             'product_id' => $this->product->id,
             'type' => Movement::TYPE_OUT,
             'cost_center_id' => $costCenter->id,
+            'employee_id' => $employee->id,
         ]);
     }
 

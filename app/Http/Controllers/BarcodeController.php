@@ -10,7 +10,7 @@ class BarcodeController extends Controller
 {
     public function show(Product $product): Response
     {
-        $generator = new BarcodeGeneratorPNG();
+        $generator = new BarcodeGeneratorPNG;
         $code = substr($product->barcode, 0, 12);
         $barcode = $generator->getBarcode($code, 'EAN13', 2, 60);
 

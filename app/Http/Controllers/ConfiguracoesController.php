@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ConfiguracoesSaveRequest;
 use App\Models\Setting;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class ConfiguracoesController extends Controller
@@ -23,18 +23,9 @@ class ConfiguracoesController extends Controller
         ]);
     }
 
-    public function save(Request $request): RedirectResponse
+    public function save(ConfiguracoesSaveRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'empresa_nome' => ['nullable', 'string', 'max:255'],
-            'empresa_cnpj' => ['nullable', 'string', 'max:18'],
-            'empresa_endereco' => ['nullable', 'string', 'max:500'],
-            'empresa_telefone' => ['nullable', 'string', 'max:20'],
-            'estoque_minimo_padrao' => ['nullable', 'integer', 'min:0'],
-            'alerta_estoque_acima_minimo' => ['nullable', 'integer', 'min:0', 'max:1000'],
-        ]);
-
-        Setting::dump($data);
+        Setting::dump($request->validated());
 
         return back()->with('success', 'Configurações salvas.');
     }

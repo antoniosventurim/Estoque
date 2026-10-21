@@ -94,6 +94,42 @@
             <x-app.product-name-search :route="''" :options="$products" />
         </x-app.card>
 
+        {{-- Produto não encontrado via ?barcode= --}}
+        @if ($notFound)
+            <div class="rounded-lg border border-red-500/40 bg-red-500/10 p-4">
+                <p class="text-[14px] font-medium text-red-400">Produto não encontrado para o código informado.</p>
+            </div>
+        @endif
+
+        {{-- Preview do produto via ?barcode= --}}
+        @if ($product)
+            <x-app.card class="p-5">
+                <div class="mb-4 flex items-center gap-3">
+                    <x-app.image-preview
+                        src="{{ $product->image ? asset('storage/'.$product->image) : null }}"
+                        alt="{{ $product->name }}"
+                        class="h-16 w-16 flex-shrink-0"
+                    >
+                        <x-app.icon name="package" :size="28" class="text-mv-accent-hover" />
+                    </x-app.image-preview>
+                    <div class="min-w-0 flex-1">
+                        <p class="text-[15px] font-semibold text-mv-text leading-tight">{{ $product->name }}</p>
+                        <p class="text-[14px] text-mv-text-muted leading-tight">Código: <span class="mono">{{ $product->barcode }}</span> @if($product->category) · {{ $product->category->name }} @endif</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
+                        <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque atual</p>
+                        <p class="text-xl font-bold text-mv-text">{{ $product->stock }} <span class="text-[14px] font-normal text-mv-text-muted">un</span></p>
+                    </div>
+                    <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
+                        <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p>
+                        <p class="text-xl font-bold text-mv-warning">{{ $product->min_stock ?? 0 }} <span class="text-[14px] font-normal text-mv-text-muted">un</span></p>
+                    </div>
+                </div>
+            </x-app.card>
+        @endif
+
         {{-- Produto encontrado --}}
         <x-app.card id="saida-product-card" class="hidden p-5">
             <div class="mb-4 flex items-center gap-3">
@@ -138,6 +174,7 @@
         </x-app.card>
 
         {{-- Lista de itens --}}
+        @if (! $notFound)
         <x-app.card id="saida-list-card" class="hidden p-5">
             <div class="mb-4 flex items-center justify-between">
                 <h3 class="text-[14px] font-semibold text-mv-text">Itens para retirada</h3>
@@ -171,6 +208,7 @@
                 Registrar Saídas
             </button>
         </x-app.card>
+        @endif
     </div>
 
     <form id="saida-batch-form" method="POST" action="{{ route('saida.batch') }}" class="hidden">
@@ -253,6 +291,7 @@
 
         // Renderizar lista
         function renderList() {
+            if (!listCard || !listEl || !listCount) return;
             if (!items.length) { listCard.classList.add('hidden'); return; }
             listCard.classList.remove('hidden');
             listCount.textContent = `${items.length} item(s)`;
@@ -277,12 +316,12 @@
             `).join('');
         }
 
-        listEl.addEventListener('click', function (e) {
+        listEl?.addEventListener('click', function (e) {
             const btn = e.target.closest('[data-action="remove"]');
             if (btn) { items.splice(Number(btn.dataset.idx), 1); renderList(); }
         });
 
-        listEl.addEventListener('input', function (e) {
+        listEl?.addEventListener('input', function (e) {
             const input = e.target.closest('[data-action="qty"]');
             if (input) {
                 const idx = Number(input.dataset.idx);
@@ -311,7 +350,7 @@
         bindSearchableSelect('employee_id', 'saida-form-emp');
 
         // Enviar formulário
-        submitBtn.addEventListener('click', function () {
+        submitBtn?.addEventListener('click', function () {
             if (!items.length) { alert('Adicione pelo menos um item à lista.'); return; }
 
             const ccHidden = document.querySelector('[name="cost_center_id"]');

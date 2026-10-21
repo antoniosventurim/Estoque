@@ -2,15 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ProductBulkDestroyRequest;
+use App\Http\Requests\ProductRequest;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Unit;
+use App\Services\ProductService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class ProductController extends Controller
 {
+    public function __construct(private readonly ProductService $products) {}
+
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('q'));
@@ -35,7 +40,6 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(10)->withQueryString();
-
         $categories = Category::orderBy('name')->get();
 
         return view('produtos.index', compact('products', 'categories', 'search', 'status', 'categoryId'));
@@ -43,121 +47,53 @@ class ProductController extends Controller
 
     public function create(): View
     {
-        $categories = Category::orderBy('name')->get();
-        $units = \App\Models\Unit::orderBy('name')->get();
-        $barcode = Product::generateUniqueBarcode();
-
-        return view('produtos.form', ['product' => null, 'categories' => $categories, 'units' => $units, 'generatedBarcode' => $barcode]);
+        return view('produtos.form', [
+            'product' => null,
+            'categories' => Category::orderBy('name')->get(),
+            'units' => Unit::orderBy('name')->get(),
+            'generatedBarcode' => Product::generateUniqueBarcode(),
+        ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(ProductRequest $request): RedirectResponse
     {
-        $data = $this->validated($request);
-
-        if (empty($data['barcode'])) {
-            $data['barcode'] = Product::generateUniqueBarcode();
-        }
-
-        $data['image'] = $this->storeImage($request);
-
-        Product::create($data);
+        $this->products->create($request->validated(), $request->file('image'));
 
         return redirect()->route('produtos.index')->with('status', 'Produto cadastrado.');
     }
 
     public function edit(Product $product): View
     {
-        $categories = Category::orderBy('name')->get();
-        $units = \App\Models\Unit::orderBy('name')->get();
-
-        return view('produtos.form', compact('product', 'categories', 'units'));
+        return view('produtos.form', [
+            'product' => $product,
+            'categories' => Category::orderBy('name')->get(),
+            'units' => Unit::orderBy('name')->get(),
+        ]);
     }
 
-    public function update(Request $request, Product $product): RedirectResponse
+    public function update(ProductRequest $request, Product $product): RedirectResponse
     {
-        $data = $this->validated($request);
-
-        if ($request->boolean('remove_image')) {
-            $this->deleteImage($product);
-            $data['image'] = null;
-        } else {
-            $data['image'] = $this->storeImage($request) ?? $product->image;
-        }
-
-        if ($data['image'] !== $product->image) {
-            $this->deleteImage($product);
-        }
-
-        $product->update($data);
+        $this->products->update(
+            $product,
+            $request->validated(),
+            $request->file('image'),
+            $request->boolean('remove_image')
+        );
 
         return redirect()->route('produtos.index')->with('status', 'Produto atualizado.');
     }
 
     public function destroy(Product $product): RedirectResponse
     {
-        $this->deleteImage($product);
-        $product->delete();
+        $this->products->destroy($product);
 
         return redirect()->route('produtos.index')->with('status', 'Produto excluído.');
     }
 
-    public function bulkDestroy(Request $request): RedirectResponse
+    public function bulkDestroy(ProductBulkDestroyRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'ids' => ['required', 'array'],
-            'ids.*' => ['integer', 'exists:products,id'],
-        ]);
-
-        $products = Product::whereIn('id', $data['ids'])->get();
-        $total = $products->count();
-
-        foreach ($products as $product) {
-            $this->deleteImage($product);
-            $product->delete();
-        }
+        $total = $this->products->destroyMany($request->validated('ids'));
 
         return redirect()->route('produtos.index')->with('status', "{$total} produto(s) excluído(s).");
-    }
-
-    protected function storeImage(Request $request): ?string
-    {
-        if (! $request->hasFile('image')) {
-            return null;
-        }
-
-        $path = $request->file('image')->store('produtos', 'public');
-
-        return $path;
-    }
-
-    protected function deleteImage(Product $product): void
-    {
-        if ($product->image && Storage::disk('public')->exists($product->image)) {
-            Storage::disk('public')->delete($product->image);
-        }
-    }
-
-    protected function validated(Request $request): array
-    {
-        $productId = $request->route('product')?->id;
-
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'barcode' => [
-                'nullable', 'string', 'max:44',
-                \Illuminate\Validation\Rule::unique('products', 'barcode')->ignore($productId),
-            ],
-            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp,gif', 'max:2048'],
-            'category_id' => ['nullable', 'exists:categories,id'],
-            'stock' => ['nullable', 'integer', 'min:0'],
-            'min_stock' => ['nullable', 'integer', 'min:0'],
-            'max_stock' => ['nullable', 'integer', 'min:0'],
-            'note' => ['nullable', 'string', 'max:500'],
-            'unit' => ['nullable', 'string', 'max:10'],
-            'is_active' => ['nullable', 'boolean'],
-        ]) + [
-            'unit' => $request->input('unit', 'un'),
-            'is_active' => $request->boolean('is_active'),
-        ];
     }
 }

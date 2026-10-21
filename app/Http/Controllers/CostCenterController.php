@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CostCenterRequest;
 use App\Models\CostCenter;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -37,9 +38,9 @@ class CostCenterController extends Controller
         return view('centros-custo.form', ['costCenter' => null]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(CostCenterRequest $request): RedirectResponse
     {
-        CostCenter::create($this->validated($request));
+        CostCenter::create($request->validated());
 
         return redirect()->route('centros-custo.index')->with('status', 'Centro de custo cadastrado.');
     }
@@ -49,9 +50,9 @@ class CostCenterController extends Controller
         return view('centros-custo.form', compact('costCenter'));
     }
 
-    public function update(Request $request, CostCenter $costCenter): RedirectResponse
+    public function update(CostCenterRequest $request, CostCenter $costCenter): RedirectResponse
     {
-        $costCenter->update($this->validated($request));
+        $costCenter->update($request->validated());
 
         return redirect()->route('centros-custo.index')->with('status', 'Centro de custo atualizado.');
     }
@@ -61,18 +62,5 @@ class CostCenterController extends Controller
         $costCenter->delete();
 
         return redirect()->route('centros-custo.index')->with('status', 'Centro de custo excluído.');
-    }
-
-    protected function validated(Request $request): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'in:curso,setor,laboratorio,administrativo'],
-            'code' => ['nullable', 'string', 'max:20'],
-            'color' => ['nullable', 'string', 'max:7'],
-            'is_active' => ['nullable', 'boolean'],
-        ]) + [
-            'is_active' => $request->boolean('is_active'),
-        ];
     }
 }
