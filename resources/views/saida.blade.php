@@ -10,20 +10,44 @@
         {{-- Sucesso (saída em lote) --}}
         @if ($success = session('success_batch'))
             <x-app.card id="saida-batch-success-card" class="border border-green-500/40 bg-green-500/10 p-5">
-                <div class="mb-3 flex items-center gap-2.5">
+                <div class="mb-3 flex items-start gap-2.5">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
-                    <span class="text-[15px] font-semibold text-green-400">{{ $success['count'] }} saída(s) registrada(s) com sucesso</span>
-                    <span id="saida-batch-countdown" class="ml-auto text-[13px] text-mv-text-muted"></span>
+                    <span class="min-w-0 flex-1 text-[14px] font-semibold text-green-400 sm:text-[15px]">{{ $success['count'] }} saída(s) registrada(s) com sucesso</span>
+                    <button type="button" data-close-success="saida-batch-success-card" title="Fechar"
+                            class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-mv-text-muted transition-colors hover:bg-green-500/15 hover:text-green-400">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
                 </div>
-                <div class="mb-3 flex flex-wrap items-start gap-x-8 gap-y-3">
-                    <div class="min-w-0">
-                        <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Funcionário</p>
-                        <p class="text-[14px] font-medium text-mv-text">{{ $success['employee'] }}</p>
-                    </div>
+                <div class="mb-3">
+                    <p class="text-[14px] text-mv-text-secondary">Retirado por: <span class="font-medium text-mv-text">{{ $success['employee'] }}</span></p>
                 </div>
-                <div class="overflow-x-auto">
+                {{-- Mobile: itens em horizontal --}}
+                <div class="space-y-2.5 sm:hidden">
+                    @foreach ($success['items'] as $item)
+                        <div class="rounded-lg border border-mv-border bg-mv-surface2 p-3">
+                            <p class="mb-2 break-words text-[14px] font-medium text-mv-text">{{ $item['name'] }}</p>
+                            <div class="grid grid-cols-3 text-center">
+                                <div>
+                                    <p class="text-[11px] uppercase tracking-wider text-mv-text-muted">Qtd</p>
+                                    <p class="text-[14px] font-semibold text-mv-text">{{ $item['qty'] }} un</p>
+                                </div>
+                                <div class="border-x border-mv-border">
+                                    <p class="text-[11px] uppercase tracking-wider text-mv-text-muted">Est. Ant.</p>
+                                    <p class="text-[14px] font-semibold text-mv-text-muted">{{ $item['before'] }} un</p>
+                                </div>
+                                <div>
+                                    <p class="text-[11px] uppercase tracking-wider text-mv-text-muted">Est. Atual</p>
+                                    <p class="text-[14px] font-semibold text-green-400">{{ $item['after'] }} un</p>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Desktop: tabela --}}
+                <div class="hidden overflow-x-auto sm:block">
                     <table class="w-full text-left text-[13px]">
                         <thead>
                             <tr class="border-b border-mv-border">
@@ -51,23 +75,26 @@
         {{-- Sucesso (saída individual) --}}
         @if ($success = session('success'))
             <x-app.card id="saida-success-card" class="border border-green-500/40 bg-green-500/10 p-5">
-                <div class="mb-3 flex items-center gap-2.5">
+                <div class="mb-3 flex items-start gap-2.5">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
                         <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
-                    <span class="text-[15px] font-semibold text-green-400">Saída registrada com sucesso</span>
-                    <span id="saida-success-countdown" class="ml-auto text-[13px] text-mv-text-muted"></span>
+                    <span class="min-w-0 flex-1 text-[14px] font-semibold text-green-400 sm:text-[15px]">Saída registrada com sucesso</span>
+                    <button type="button" data-close-success="saida-success-card" title="Fechar"
+                            class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-mv-text-muted transition-colors hover:bg-green-500/15 hover:text-green-400">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
                 </div>
-                <div class="flex flex-wrap items-start gap-x-8 gap-y-3">
-                    <div class="min-w-0">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:flex-wrap sm:items-start sm:gap-x-8 sm:gap-y-3">
+                    <div class="col-span-2 min-w-0">
                         <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Produto</p>
-                        <p class="truncate text-[14px] font-medium text-mv-text">{{ $success['name'] }}</p>
+                        <p class="break-words text-[14px] font-medium text-mv-text sm:truncate">{{ $success['name'] }}</p>
                     </div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Quantidade retirada</p><p class="text-[14px] font-medium text-mv-text">-{{ $success['qty'] }} un</p></div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque anterior</p><p class="text-[14px] font-medium text-mv-text">{{ $success['before'] }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-mv-text">{{ $success['after'] }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-text">{{ $success['min_stock'] ?? 0 }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Retirado por</p><p class="text-[14px] font-medium text-mv-text">{{ $success['employee'] ?? '' }}</p></div>
+                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-green-400">{{ $success['after'] }} un</p></div>
+                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-warning">{{ $success['min_stock'] ?? 0 }} un</p></div>
+                    <div class="col-span-2 sm:col-span-1"><p class="text-[14px] text-mv-text-secondary">Retirado por: <span class="break-words font-medium text-mv-text">{{ $success['employee'] ?? '' }}</span></p></div>
                 </div>
             </x-app.card>
         @endif
@@ -187,8 +214,8 @@
                 <div class="grid gap-3 sm:grid-cols-2">
                     <x-app.searchable-select
                         name="cost_center_id"
-                        label="Centro de Custo *"
-                        placeholder="Buscar centro de custo..."
+                        label="Vai para qual setor? *"
+                        placeholder="Buscar setor..."
                         :required="true"
                         :options="$costCenters->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ucfirst($c->type)])->values()->all()"
                     />
@@ -296,14 +323,14 @@
             listCard.classList.remove('hidden');
             listCount.textContent = `${items.length} item(s)`;
             listEl.innerHTML = items.map((item, idx) => `
-                <div class="flex items-center gap-3 rounded-lg border border-mv-border bg-mv-surface2 p-3">
+                <div class="flex flex-col gap-3 rounded-lg border border-mv-border bg-mv-surface2 p-3 sm:flex-row sm:items-center">
                     <div class="min-w-0 flex-1">
-                        <p class="text-[14px] font-medium text-mv-text truncate">${item.name}</p>
-                        <p class="text-[12px] text-mv-text-muted">Cod: ${item.barcode} · Estoque: ${item.stock} ${item.unit}</p>
+                        <p class="text-[14px] font-medium text-mv-text break-words sm:truncate">${item.name}</p>
+                        <p class="text-[12px] text-mv-text-muted">Estoque atual: <span class="font-semibold text-mv-text-secondary">${item.stock} ${item.unit}</span></p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center justify-between gap-2 sm:justify-end">
                         <input type="number" min="1" max="${item.stock}" value="${item.quantity}"
-                               class="w-16 rounded border border-mv-border bg-mv-surface px-2 py-1.5 text-center text-[14px] font-semibold text-mv-text outline-none"
+                               class="w-20 rounded border border-mv-border bg-mv-surface px-2 py-1.5 text-center text-[14px] font-semibold text-mv-text outline-none"
                                data-idx="${idx}" data-action="qty">
                         <span class="min-w-[28px] text-center text-[12px] text-mv-text-muted">${item.unit}</span>
                         <button type="button" data-idx="${idx}" data-action="remove"
@@ -358,7 +385,7 @@
             const ccVal = ccHidden ? ccHidden.value : '';
             const empVal = empHidden ? empHidden.value : '';
 
-            if (!ccVal) { alert('Selecione o centro de custo.'); return; }
+            if (!ccVal) { alert('Informe o setor (centro de custo).'); return; }
             if (!empVal) { alert('Selecione o funcionário responsável.'); return; }
 
             document.getElementById('saida-form-items').value = JSON.stringify(items.map(i => ({ barcode: i.barcode, quantity: i.quantity })));
@@ -367,43 +394,16 @@
             document.getElementById('saida-batch-form').submit();
         });
 
-        // Countdown da mensagem de sucesso (20s)
-        const successCard = document.getElementById('saida-success-card');
-        const countdownEl = document.getElementById('saida-success-countdown');
-        if (successCard && countdownEl) {
-            let remaining = 20;
-            countdownEl.textContent = `Removendo notificação em ${remaining}s`;
-            const interval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(interval);
-                    successCard.style.transition = 'opacity 0.3s';
-                    successCard.style.opacity = '0';
-                    setTimeout(() => successCard.remove(), 300);
-                } else {
-                    countdownEl.textContent = `Removendo notificação em ${remaining}s`;
-                }
-            }, 1000);
-        }
-
-        // Countdown da mensagem de sucesso em lote (20s)
-        const batchSuccessCard = document.getElementById('saida-batch-success-card');
-        const batchCountdownEl = document.getElementById('saida-batch-countdown');
-        if (batchSuccessCard && batchCountdownEl) {
-            let remaining = 20;
-            batchCountdownEl.textContent = `Removendo notificação em ${remaining}s`;
-            const interval = setInterval(() => {
-                remaining--;
-                if (remaining <= 0) {
-                    clearInterval(interval);
-                    batchSuccessCard.style.transition = 'opacity 0.3s';
-                    batchSuccessCard.style.opacity = '0';
-                    setTimeout(() => batchSuccessCard.remove(), 300);
-                } else {
-                    batchCountdownEl.textContent = `Removendo notificação em ${remaining}s`;
-                }
-            }, 1000);
-        }
+        // Fechar notificações de sucesso no X
+        document.querySelectorAll('[data-close-success]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const card = document.getElementById(btn.dataset.closeSuccess);
+                if (!card) return;
+                card.style.transition = 'opacity 0.3s';
+                card.style.opacity = '0';
+                setTimeout(() => card.remove(), 300);
+            });
+        });
     })();
     </script>
 </x-app.layout>
