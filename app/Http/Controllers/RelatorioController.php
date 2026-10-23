@@ -2,25 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\RelatorioFilterRequest;
 use App\Models\Movement;
 use App\Models\Product;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class RelatorioController extends Controller
 {
-    public function index(Request $request): View
+    public function index(RelatorioFilterRequest $request): View
     {
-        $from = (string) $request->query('from', '');
-        $to = (string) $request->query('to', '');
-
-        $fromDate = $from !== '' ? Carbon::createFromFormat('d-m-Y', $from)->format('Y-m-d') : null;
-        $toDate = $to !== '' ? Carbon::createFromFormat('d-m-Y', $to)->format('Y-m-d') : null;
+        $from = (string) $request->input('from', '');
+        $to = (string) $request->input('to', '');
 
         $movementsQuery = Movement::query()
-            ->when($fromDate, fn ($q) => $q->whereDate('created_at', '>=', $fromDate))
-            ->when($toDate, fn ($q) => $q->whereDate('created_at', '<=', $toDate));
+            ->when($request->fromDate(), fn ($q, $date) => $q->whereDate('created_at', '>=', $date))
+            ->when($request->toDate(), fn ($q, $date) => $q->whereDate('created_at', '<=', $date));
 
         $totalEntradas = (clone $movementsQuery)->where('type', Movement::TYPE_IN)->sum('quantity');
         $totalSaidas = (clone $movementsQuery)->where('type', Movement::TYPE_OUT)->sum('quantity');

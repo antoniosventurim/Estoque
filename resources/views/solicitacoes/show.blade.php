@@ -15,7 +15,7 @@
     <x-app.flash />
 
     <x-app.card class="mb-5 p-4">
-        <div class="flex flex-wrap items-center gap-x-8 gap-y-2 text-[14px]">
+        <div class="grid grid-cols-2 gap-x-6 gap-y-4 text-[14px] sm:flex sm:flex-wrap sm:items-center sm:gap-x-8 sm:gap-y-2">
             <div>
                 <p class="text-xs font-medium uppercase tracking-wider text-mv-text-secondary">Status</p>
                 @if ($purchaseRequest->status === \App\Models\PurchaseRequest::STATUS_DELIVERED)
@@ -39,7 +39,7 @@
                 <p class="text-mv-text">{{ $purchaseRequest->deliveredBy->name ?? '—' }}</p>
             </div>
             @if ($purchaseRequest->note)
-                <div>
+                <div class="col-span-2 sm:col-span-1">
                     <p class="text-xs font-medium uppercase tracking-wider text-mv-text-secondary">Observação</p>
                     <p class="text-mv-text">{{ $purchaseRequest->note }}</p>
                 </div>

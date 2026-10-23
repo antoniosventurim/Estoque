@@ -6,17 +6,21 @@
     />
 
     {{-- Filtro por período --}}
-    <form method="GET" action="{{ route('relatorios') }}" class="mb-5 flex flex-wrap items-end gap-2.5">
+    <x-app.errors />
+    <form method="GET" action="{{ route('relatorios') }}" id="filtro-periodo" class="mb-5 flex flex-wrap items-end gap-2.5">
+        <div id="periodo-erro" class="hidden w-full rounded-md border border-mv-danger-solid/50 bg-mv-danger-bg p-3 text-[14px] text-mv-danger">
+            A data inicial não pode ser maior que a data final.
+        </div>
         <div class="flex flex-col">
             <label class="mb-1 text-xs text-mv-text-secondary">De</label>
             <div class="w-[160px]">
-                <x-bladewind::datepicker name="from" :selected-value="$from" placeholder="De" label="" week-starts="monday" format="dd-mm-yyyy" />
+                <x-bladewind::datepicker name="from" :selected-value="old('from', $from)" placeholder="De" label="" week-starts="monday" format="dd-mm-yyyy" />
             </div>
         </div>
         <div class="flex flex-col">
             <label class="mb-1 text-xs text-mv-text-secondary">Até</label>
             <div class="w-[160px]">
-                <x-bladewind::datepicker name="to" :selected-value="$to" placeholder="Até" label="" week-starts="monday" format="dd-mm-yyyy" />
+                <x-bladewind::datepicker name="to" :selected-value="old('to', $to)" placeholder="Até" label="" week-starts="monday" format="dd-mm-yyyy" />
             </div>
         </div>
         <x-app.btn type="submit" icon="filter" variant="secondary">Aplicar</x-app.btn>
@@ -24,6 +28,52 @@
             <x-app.btn as="a" href="{{ route('relatorios') }}" variant="ghost">Limpar</x-app.btn>
         @endif
     </form>
+
+    <script>
+        (function () {
+            const form = document.getElementById('filtro-periodo');
+            if (!form) return;
+
+            const erro = document.getElementById('periodo-erro');
+            const fromInput = form.querySelector('[name="from"]');
+            const toInput = form.querySelector('[name="to"]');
+
+            function parseDate(value) {
+                const match = /^(\d{2})-(\d{2})-(\d{4})$/.exec((value || '').trim());
+                if (!match) return null;
+                const day = Number(match[1]);
+                const month = Number(match[2]) - 1;
+                const year = Number(match[3]);
+                const date = new Date(year, month, day);
+                return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day ? date : null;
+            }
+
+            function validarPeriodo() {
+                const from = parseDate(fromInput.value);
+                const to = parseDate(toInput.value);
+                const invalido = !!(from && to && from > to);
+                erro.classList.toggle('hidden', !invalido);
+                return !invalido;
+            }
+
+            form.addEventListener('submit', function (event) {
+                if (!validarPeriodo()) {
+                    event.preventDefault();
+                }
+            });
+
+            [fromInput, toInput].forEach(function (input) {
+                input.addEventListener('input', validarPeriodo);
+                input.addEventListener('change', validarPeriodo);
+            });
+
+            document.addEventListener('click', function (event) {
+                if (event.target.closest('.a-day')) {
+                    setTimeout(validarPeriodo, 0);
+                }
+            });
+        })();
+    </script>
 
     {{-- Cards resumo --}}
     <div class="mb-5 grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">

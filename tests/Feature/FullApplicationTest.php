@@ -515,6 +515,31 @@ class FullApplicationTest extends TestCase
         ]))->assertOk();
     }
 
+    public function test_relatorios_rejects_inverted_date_range(): void
+    {
+        Product::factory()->create();
+
+        $this->actingAs($this->admin)
+            ->from(route('relatorios'))
+            ->get(route('relatorios', [
+                'from' => now()->addDay()->format('d-m-Y'),
+                'to' => now()->format('d-m-Y'),
+            ]))
+            ->assertRedirect(route('relatorios'))
+            ->assertSessionHasErrors('from');
+    }
+
+    public function test_relatorios_rejects_invalid_date_format(): void
+    {
+        Product::factory()->create();
+
+        $this->actingAs($this->admin)
+            ->from(route('relatorios'))
+            ->get(route('relatorios', ['from' => '2026-10-23']))
+            ->assertRedirect(route('relatorios'))
+            ->assertSessionHasErrors('from');
+    }
+
     public function test_lista_compra_index_and_export(): void
     {
         Product::factory()->create(['name' => 'Papel A4', 'stock' => 1, 'min_stock' => 10]);
