@@ -11,31 +11,33 @@
 
     {{-- Filtros --}}
     <div class="mb-4 flex flex-wrap items-center gap-2.5">
-        <form method="GET" action="{{ route('produtos.index') }}" class="flex flex-1 flex-wrap items-center gap-2.5">
-            <div class="relative min-w-[240px] flex-1">
+        <form method="GET" action="{{ route('produtos.index') }}" class="flex flex-1 flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+            <div class="relative w-full sm:min-w-[240px] sm:flex-1">
                 <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mv-text-muted"><x-app.icon name="search" :size="14" /></div>
-                <input type="text" name="q" value="{{ $search }}" placeholder="Buscar por nome ou código de barras..."
+                <input type="text" name="q" value="{{ $search }}" placeholder="Buscar por nome..."
                     class="w-full rounded-md border border-mv-border bg-mv-surface py-2 pl-8 pr-2.5 text-[14px] text-mv-text outline-none focus:border-blue-600">
             </div>
-            <div class="relative w-[180px]">
-                <x-app.searchable-select
-                    name="status"
-                    placeholder="Status"
-                    :selected="$status"
-                    :selected-label="$status === 'ativo' ? 'Ativo' : ($status === 'inativo' ? 'Inativo' : '')"
-                    :options="collect([['id' => 'ativo', 'name' => 'Ativo', 'sub' => ''], ['id' => 'inativo', 'name' => 'Inativo', 'sub' => '']])->values()->all()"
-                />
+            <div class="grid grid-cols-2 gap-2.5 sm:contents">
+                <div class="relative sm:w-[180px]">
+                    <x-app.searchable-select
+                        name="status"
+                        placeholder="Status"
+                        :selected="$status"
+                        :selected-label="$status === 'ativo' ? 'Ativo' : ($status === 'inativo' ? 'Inativo' : '')"
+                        :options="collect([['id' => 'ativo', 'name' => 'Ativo', 'sub' => ''], ['id' => 'inativo', 'name' => 'Inativo', 'sub' => '']])->values()->all()"
+                    />
+                </div>
+                <div class="relative sm:w-[180px]">
+                    <x-app.searchable-select
+                        name="category"
+                        placeholder="Categoria"
+                        :selected="$categoryId"
+                        :selected-label="$categoryId !== '' ? ($categories->firstWhere('id', (int) $categoryId)->name ?? '') : ''"
+                        :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ''])->values()->all()"
+                    />
+                </div>
             </div>
-            <div class="relative w-[180px]">
-                <x-app.searchable-select
-                    name="category"
-                    placeholder="Categoria"
-                    :selected="$categoryId"
-                    :selected-label="$categoryId !== '' ? ($categories->firstWhere('id', (int) $categoryId)->name ?? '') : ''"
-                    :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ''])->values()->all()"
-                />
-            </div>
-            <x-app.btn type="submit" icon="search" variant="secondary">Filtrar</x-app.btn>
+            <x-app.btn type="submit" icon="search" variant="secondary" class="w-full justify-center sm:w-auto">Filtrar</x-app.btn>
         </form>
     </div>
 

@@ -6,7 +6,7 @@
     <title>Entrar · Estoque</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-screen items-center justify-center bg-mv-bg p-4 text-mv-text antialiased">
+<body class="flex h-[100dvh] items-center justify-center overflow-hidden overscroll-none bg-mv-bg p-4 text-mv-text antialiased">
     <div class="w-full max-w-sm">
         <div class="mb-6 flex justify-center">
             <div class="flex items-center gap-3">
