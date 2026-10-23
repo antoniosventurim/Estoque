@@ -9,23 +9,27 @@
 
         {{-- Sucesso --}}
         @if ($success = session('success'))
-            <x-app.card class="p-5" style="border-color: #34c45a55; background: #1a6b3522">
-                <div class="mb-3 flex items-center gap-2.5">
+            <x-app.card id="entrada-success-card" class="p-5" style="border-color: #34c45a55; background: #1a6b3522">
+                <div class="mb-3 flex items-start gap-2.5">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-success-solid text-white">
                         <x-app.icon name="check" :size="16" />
                     </div>
-                    <span class="text-[15px] font-semibold text-mv-success">Entrada registrada com sucesso</span>
+                    <span class="min-w-0 flex-1 text-[14px] font-semibold text-mv-success sm:text-[15px]">Entrada registrada com sucesso</span>
+                    <button type="button" data-close-success="entrada-success-card" title="Fechar"
+                            class="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-md text-mv-text-muted transition-colors hover:bg-mv-success/15 hover:text-mv-success">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                    </button>
                 </div>
-                <div class="flex flex-wrap items-start gap-x-8 gap-y-3">
-                    <div class="min-w-0">
+                <div class="grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:flex-wrap sm:items-start sm:gap-x-8 sm:gap-y-3">
+                    <div class="col-span-2 min-w-0">
                         <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Produto</p>
-                        <p class="truncate text-[14px] font-medium text-mv-text">{{ $success['name'] }}</p>
+                        <p class="break-words text-[14px] font-medium text-mv-text sm:truncate">{{ $success['name'] }}</p>
                     </div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Quantidade adicionada</p><p class="text-[14px] font-medium text-mv-text">+{{ $success['qty'] }} un</p></div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque anterior</p><p class="text-[14px] font-medium text-mv-text">{{ $success['before'] }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-mv-text">{{ $success['after'] }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-text">{{ $success['min_stock'] ?? 0 }} un</p></div>
-                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Adicionado por</p><p class="text-[14px] font-medium text-mv-text">{{ $success['user'] ?? '' }}</p></div>
+                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-mv-success">{{ $success['after'] }} un</p></div>
+                    <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-warning">{{ $success['min_stock'] ?? 0 }} un</p></div>
+                    <div class="col-span-2 sm:col-span-1"><p class="text-[14px] text-mv-text-secondary">Adicionado por: <span class="break-words font-medium text-mv-text">{{ $success['user'] ?? '' }}</span></p></div>
                 </div>
             </x-app.card>
         @endif
@@ -90,7 +94,7 @@
                     <div class="mt-3">
                         <x-app.searchable-select
                             name="cost_center_id"
-                            label="Centro de Custo *"
+                            label="Para qual setor? *"
                             placeholder="Buscar curso/setor..."
                             :required="true"
                             :options="$costCenters->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ucfirst($c->type)])->values()->all()"
@@ -107,6 +111,16 @@
 
     <script>
         (function () {
+            document.querySelectorAll('[data-close-success]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const card = document.getElementById(btn.dataset.closeSuccess);
+                    if (!card) return;
+                    card.style.transition = 'opacity 0.3s';
+                    card.style.opacity = '0';
+                    setTimeout(() => card.remove(), 300);
+                });
+            });
+
             const qty = document.getElementById('quantity');
             const preview = document.getElementById('entrada-new-stock');
             const current = Number(document.getElementById('entrada-stock')?.dataset.value);
