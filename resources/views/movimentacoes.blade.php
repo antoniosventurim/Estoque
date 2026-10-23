@@ -6,13 +6,13 @@
     />
 
     {{-- Filtros --}}
-    <form method="GET" action="{{ route('movimentacoes') }}" class="mb-4 flex flex-wrap items-center gap-2.5">
-        <div class="relative min-w-[200px] flex-1">
+    <form method="GET" action="{{ route('movimentacoes') }}" class="mb-4 flex flex-col gap-2.5 sm:flex-row sm:flex-wrap sm:items-center">
+        <div class="relative w-full sm:min-w-[200px] sm:flex-1">
             <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mv-text-muted"><x-app.icon name="search" :size="14" /></div>
             <input type="text" name="q" value="{{ $search }}" placeholder="Buscar produto..."
                 class="w-full rounded-md border border-mv-border bg-mv-surface py-2 pl-8 pr-2.5 text-[14px] text-mv-text outline-none focus:border-blue-600">
         </div>
-        <div class="relative w-[180px]">
+        <div class="relative w-full sm:w-[180px]">
             <x-app.searchable-select
                 name="type"
                 placeholder="Tipo"
@@ -21,7 +21,7 @@
                 :options="collect([['id' => 'in', 'name' => 'Entrada', 'sub' => ''], ['id' => 'out', 'name' => 'Saída', 'sub' => ''], ['id' => 'adjust', 'name' => 'Ajuste', 'sub' => '']])->values()->all()"
             />
         </div>
-        <div class="relative w-[180px]">
+        <div class="relative w-full sm:w-[180px]">
             <x-app.searchable-select
                 name="employee"
                 placeholder="Funcionário"
@@ -30,7 +30,7 @@
                 :options="$employees->map(fn ($e) => ['id' => $e->id, 'name' => $e->name, 'sub' => ''])->values()->all()"
             />
         </div>
-        <div class="relative w-[180px]">
+        <div class="relative w-full sm:w-[180px]">
             <x-app.searchable-select
                 name="cost_center"
                 placeholder="Centro de custo"
@@ -39,10 +39,12 @@
                 :options="$costCenters->map(fn ($cc) => ['id' => $cc->id, 'name' => $cc->name, 'sub' => ''])->values()->all()"
             />
         </div>
-        <x-app.btn type="submit" icon="search" variant="secondary">Filtrar</x-app.btn>
-        @if ($type !== '' || $employee !== '' || $costCenter !== '' || $search !== '')
-            <x-app.btn as="a" href="{{ route('movimentacoes') }}" variant="ghost">Limpar</x-app.btn>
-        @endif
+        <div class="flex gap-2.5">
+            <x-app.btn type="submit" icon="search" variant="secondary" class="flex-1 justify-center sm:flex-none">Filtrar</x-app.btn>
+            @if ($type !== '' || $employee !== '' || $costCenter !== '' || $search !== '')
+                <x-app.btn as="a" href="{{ route('movimentacoes') }}" variant="ghost" class="flex-1 justify-center sm:flex-none">Limpar</x-app.btn>
+            @endif
+        </div>
     </form>
 
     <x-app.card class="overflow-hidden">

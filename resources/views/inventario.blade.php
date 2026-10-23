@@ -69,20 +69,26 @@
                         @csrf
                         <input type="hidden" name="product_id" value="{{ $selected->id }}">
 
-                        <div class="grid grid-cols-3 gap-3 text-center">
+                        <div class="grid grid-cols-1 gap-3 text-center sm:grid-cols-3">
                             <div class="rounded-lg border border-mv-border bg-mv-surface2 p-4">
-                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque no sistema</p>
-                                <p class="mt-1 text-2xl font-bold text-mv-text">{{ $selected->stock }}</p>
+                                <div class="flex items-center justify-between gap-3 sm:block">
+                                    <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque no sistema</p>
+                                    <p class="text-2xl font-bold text-mv-text sm:mt-1">{{ $selected->stock }}</p>
+                                </div>
                             </div>
                             <div class="rounded-lg border border-mv-border bg-mv-surface2 p-4">
-                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Diferença (+/-)</p>
-                                <input id="adjustment" type="number" name="adjustment" value="0"
-                                    class="mt-1 w-full rounded-md border border-mv-border bg-mv-bg px-2 py-2 text-center text-lg font-semibold text-mv-text outline-none">
-                                <p class="mt-1 text-[12px] text-mv-text-muted">+ sobra / - quebra</p>
+                                <div class="flex items-center justify-between gap-3 sm:block">
+                                    <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Diferença (+/-)</p>
+                                    <input id="adjustment" type="number" name="adjustment" value="0"
+                                        class="w-24 rounded-md border border-mv-border bg-mv-bg px-2 py-2 text-center text-lg font-semibold text-mv-text outline-none sm:mt-1 sm:w-full">
+                                </div>
+                                <p class="mt-1 text-right text-[12px] text-mv-text-muted sm:text-center">+ sobra / - quebra</p>
                             </div>
                             <div class="rounded-lg border p-4" id="preview-box" style="background: #222; border-color: #2e2e2e55">
-                                <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p>
-                                <p id="preview-val" class="mt-1 text-2xl font-bold text-mv-text-muted">{{ $selected->stock }}</p>
+                                <div class="flex items-center justify-between gap-3 sm:block">
+                                    <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p>
+                                    <p id="preview-val" class="text-2xl font-bold text-mv-text-muted sm:mt-1">{{ $selected->stock }}</p>
+                                </div>
                             </div>
                         </div>
                         <script>
@@ -96,7 +102,7 @@
                                     const preview = Math.max(0, system + adj);
                                     val.textContent = preview;
                                     const isDanger = adj < 0, isWarn = adj > 0, isOk = adj === 0;
-                                    val.className = 'mt-1 text-2xl font-bold ' + (isDanger ? 'text-mv-danger' : isWarn ? 'text-mv-success' : 'text-mv-text-muted');
+                                    val.className = 'text-2xl font-bold sm:mt-1 ' + (isDanger ? 'text-mv-danger' : isWarn ? 'text-mv-success' : 'text-mv-text-muted');
                                     box.style.background = isDanger ? '#8f0b2022' : isWarn ? '#1a6b3522' : '#222';
                                     box.style.borderColor = (isDanger ? '#e8334a' : isWarn ? '#34c45a' : '#2e2e2e') + '55';
                                 };
