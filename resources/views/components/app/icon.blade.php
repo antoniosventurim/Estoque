@@ -98,6 +98,9 @@
         @case('lock')
             <rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/>
             @break
+        @case('history')
+            <polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+            @break
         @default
             <circle cx="12" cy="12" r="10"/>
     @endswitch

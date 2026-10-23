@@ -321,7 +321,9 @@ CRUDs completos com validações em FormRequests, busca, paginação e regras de
 
 ## 18. Configurações
 
-Rota: `/admin/configuracoes` (`ConfiguracoesSaveRequest`) — tabela `settings` (key-value):
+Rota: `/admin/configuracoes` (`ConfiguracoesSaveRequest`) — tabela `settings` (key-value). A página possui duas abas:
+
+### Aba Geral
 
 | Chave | Descrição | Padrão |
 |---|---|---|
@@ -331,6 +333,16 @@ Rota: `/admin/configuracoes` (`ConfiguracoesSaveRequest`) — tabela `settings` 
 | `empresa_telefone` | Telefone | — |
 | `estoque_minimo_padrao` | Estoque mínimo sugerido | — |
 | `alerta_estoque_acima_minimo` | Margem % p/ alerta de estoque próximo do mínimo (0–1000) | 30 |
+
+### Aba Registros de Atividade
+
+Rota: `/admin/configuracoes/registros` — histórico de criações, alterações, exclusões e restaurações (pacote `spatie/laravel-activitylog`, log `estoque`).
+
+- Trait `App\Models\Concerns\LogsActivity` aplicado em: `Product`, `Category`, `Unit`, `CostCenter`, `Employee`, `PurchaseRequest`, `PurchaseRequestItem`, `User` e `Setting`.
+- Registra o responsável (`causer`), o registro afetado (`subject`) e apenas os atributos alterados (dirty). `password` e `remember_token` nunca são logados (`config/activitylog.php`).
+- Filtros por descrição/usuário, ação (Criação/Alteração/Exclusão) e módulo.
+- Labels em pt-BR centralizados em `App\Support\ActivityLogMap`.
+- Protegida pela mesma permissão `configuracoes.manage`.
 
 ---
 
@@ -346,6 +358,8 @@ Rota → Middleware (auth + permission) → FormRequest (validação) → Contro
 - **`app/Http/Controllers/`** — apenas orquestração: recebe dados já validados (`$request->validated()`), chama services e retorna views/redirects.
 - **`app/Services/`** — regras de negócio: `StockService` (entrada/saída/lote/ajuste), `ProductService` (imagem + barcode), `UsuarioService`, `RoleService`, `PurchaseRequestService`.
 - **`app/Support/PermissionMap`** — mapa central de módulos, ações e exigência por rota.
+- **`app/Support/ActivityLogMap`** — labels pt-BR e helpers do histórico de atividade.
+- **`app/Models/Concerns/LogsActivity`** — trait de log de atividade (criação/alteração/exclusão/restauração) aplicado nos models de negócio.
 - **`app/Http/Middleware/CheckPermission`** — aplica o mapa de permissões (Spatie `can()`); administradores são liberados pelo `Gate::before`.
 
 ---
@@ -363,6 +377,7 @@ Rota → Middleware (auth + permission) → FormRequest (validação) → Contro
 | `employees` | name | **Sem** soft deletes |
 | `settings` | key (único), value | Key-value store |
 | `purchase_requests` (+ items) | status (pending/partial/delivered), note, quantities recebidas | Solicitações de compra |
+| `activity_log` | log_name, description, event, subject/causer (morph), attribute_changes | `spatie/laravel-activitylog` — histórico de alterações |
 | Tabelas Spatie | roles, permissions, model_has_*, permission_has_* | Perfis e permissões |
 
 ---
@@ -445,6 +460,7 @@ Base: rotas `/admin/*` exigem autenticação; a maioria exige permissão conform
 | CRUD | `/admin/usuarios` | `usuarios.*` |
 | CRUD | `/admin/perfis` | `roles.*` |
 | GET/POST | `/admin/configuracoes` | `configuracoes` / `configuracoes.save` |
+| GET | `/admin/configuracoes/registros` | `configuracoes.registros` |
 | GET | `/admin/etiquetas` | `etiquetas.index` |
 | GET | `/admin/etiquetas/imprimir` | `etiquetas.print` |
 
@@ -454,7 +470,7 @@ Base: rotas `/admin/*` exigem autenticação; a maioria exige permissão conform
 
 ## 23. Testes Automatizados
 
-PHPUnit, SQLite in-memory, **86 testes / 321 asserções** — todos passando:
+PHPUnit, SQLite in-memory, **96 testes / 346 asserções**:
 
 | Arquivo | Cobertura |
 |---|---|
@@ -468,6 +484,7 @@ PHPUnit, SQLite in-memory, **86 testes / 321 asserções** — todos passando:
 | `SearchableSelectTest` | Componente de select com busca |
 | `PurchaseRequestFlowTest` | Solicitações de compra: geração, entrega total/parcial, exclusão |
 | `RolesFlowTest` | Perfis e permissões granulares, bypass de admin, CRUD de perfis |
+| `ActivityLogFlowTest` | Log de atividade: criação/alteração/exclusão com responsável, não-log de senha, filtros da aba Registros e permissão |
 
 CI: GitHub Actions (`.github/workflows/tests.yml`) em PHP 8.2 / 8.3 / 8.4.
 
@@ -485,10 +502,11 @@ app-laravel/
 │   │   ├── Middleware/CheckPermission.php
 │   │   └── Requests/           (16 FormRequests — validação centralizada)
 │   ├── Models/                 (User, Product, Movement, Category, Unit,
-│   │                            CostCenter, Employee, Setting, PurchaseRequest…)
+│   │   │                        CostCenter, Employee, Setting, PurchaseRequest…)
+│   │   └── Concerns/LogsActivity.php
 │   ├── Services/               (StockService, ProductService, UsuarioService,
 │   │                            RoleService, PurchaseRequestService)
-│   └── Support/PermissionMap.php
+│   └── Support/                (PermissionMap.php, ActivityLogMap.php)
 ├── database/
 │   ├── factories/
 │   ├── migrations/
@@ -502,7 +520,7 @@ app-laravel/
 │       └── components/app/     (layout, card, btn, searchable-select,
 │                                product-name-search, image-preview, stock-badge…)
 ├── routes/web.php
-├── tests/Feature/              (10 arquivos, 86 testes)
+├── tests/Feature/              (11 arquivos, 96 testes)
 ├── docker/, docker-compose.yml, Dockerfile
 └── .github/workflows/          (tests.yml)
 ```

@@ -4,6 +4,23 @@
         icon="settings"
     />
 
+    @php $activeTab = 'geral'; @endphp
+
+    <div class="mb-4 flex items-center gap-1.5">
+        @foreach ([
+            'geral' => ['label' => 'Geral', 'route' => route('configuracoes')],
+            'registros' => ['label' => 'Registros de Atividade', 'route' => route('configuracoes.registros')],
+        ] as $key => $tab)
+            <a href="{{ $tab['route'] }}"
+                @class([
+                    'rounded-md border px-3 py-1.5 text-[14px] transition-colors',
+                    'border-mv-border bg-mv-surface2 text-mv-text font-medium' => $activeTab === $key,
+                    'border-mv-border text-mv-text-secondary hover:text-mv-text' => $activeTab !== $key,
+                ])
+            >{{ $tab['label'] }}</a>
+        @endforeach
+    </div>
+
     @if (session('success'))
         <div class="mb-4 rounded-md border border-mv-success-solid/50 bg-mv-success-bg p-3 text-[14px] text-mv-success">
             <span class="inline-flex items-center gap-2"><x-app.icon name="check" :size="14" />{{ session('success') }}</span>

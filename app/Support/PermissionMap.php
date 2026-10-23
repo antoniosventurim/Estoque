@@ -134,6 +134,7 @@ class PermissionMap
 
         // Configurações / etiquetas
         'configuracoes' => 'configuracoes.manage',
+        'configuracoes.registros' => 'configuracoes.manage',
         'configuracoes.save' => 'configuracoes.manage',
         'etiquetas.index' => 'etiquetas.view',
         'etiquetas.print' => 'etiquetas.view',

@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsActivity;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PurchaseRequestItem extends Model
 {
+    use LogsActivity;
+
     protected $fillable = [
         'purchase_request_id',
         'product_id',

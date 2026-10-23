@@ -33,6 +33,7 @@
         'relatorios' => 'Relatórios',
         'usuarios' => 'Usuários',
         'configuracoes' => 'Configurações',
+        'configuracoes.registros' => 'Registros de Atividade',
         'roles.index' => 'Permissões e Perfis',
         'roles.create' => 'Novo Perfil',
         'roles.edit' => 'Editar Perfil',
@@ -73,7 +74,7 @@
 
             {{-- Nav --}}
             <nav class="flex-1 overflow-y-auto p-2">
-                <button id="sidebar-collapse-toggle" type="button" title="Recolher menu" class="sidebar-collapse-toggle mb-1 flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[14px] text-mv-text-secondary transition-colors hover:bg-white/5 hover:text-mv-text">
+                <button id="sidebar-collapse-toggle" type="button" title="Recolher menu" class="sidebar-collapse-toggle mb-1 flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[15px] text-mv-text-secondary transition-colors hover:bg-white/5 hover:text-mv-text md:text-[14px]">
                     <x-app.icon name="panel-left" :size="15" /> <span class="nav-label">Recolher menu</span>
                 </button>
                 <div class="mx-1 mb-1.5 border-b border-mv-border"></div>
@@ -81,7 +82,7 @@
                     <a
                         href="{{ route($item['route']) }}"
                         @class([
-                            'mb-0.5 flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[14px] transition-colors',
+                            'mb-0.5 flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[15px] transition-colors md:text-[14px]',
                             'bg-mv-accent-soft text-mv-accent-hover font-medium' => $item['active'],
                             'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text font-normal' => ! $item['active'],
                         ])
@@ -95,7 +96,7 @@
                 <div class="mb-0.5">
                     <button type="button" id="config-toggle" data-config-toggle
                         @class([
-                            'flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[14px] transition-colors',
+                            'flex w-full items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[15px] transition-colors md:text-[14px]',
                             'bg-mv-accent-soft text-mv-accent-hover font-medium' => $configActive && !$configOpen,
                             'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text font-normal' => !$configActive,
                         ])
@@ -105,9 +106,19 @@
                         <x-app.icon name="chevron-down" :size="12" class="nav-label transition-transform {{ $configOpen ? 'rotate-180' : '' }}" />
                     </button>
                     <div id="config-submenu" class="{{ $configOpen ? '' : 'hidden' }} ml-4 mt-0.5 space-y-0.5 border-l border-mv-border pl-3">
+                        <a href="{{ route('configuracoes') }}"
+                            @class([
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
+                                'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('configuracoes'),
+                                'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('configuracoes'),
+                            ])
+                        >
+                            <x-app.icon name="settings" :size="13" />
+                            <span class="nav-label">Geral</span>
+                        </a>
                         <a href="{{ route('categorias.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('categorias.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('categorias.*'),
                             ])
@@ -117,7 +128,7 @@
                         </a>
                         <a href="{{ route('centros-custo.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('centros-custo.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('centros-custo.*'),
                             ])
@@ -127,7 +138,7 @@
                         </a>
                         <a href="{{ route('usuarios') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('usuarios'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('usuarios'),
                             ])
@@ -137,7 +148,7 @@
                         </a>
                         <a href="{{ route('funcionarios.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('funcionarios.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('funcionarios.*'),
                             ])
@@ -147,7 +158,7 @@
                         </a>
                         <a href="{{ route('unidades.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('unidades.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('unidades.*'),
                             ])
@@ -157,7 +168,7 @@
                         </a>
                         <a href="{{ route('roles.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('roles.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('roles.*'),
                             ])
@@ -167,7 +178,7 @@
                         </a>
                         <a href="{{ route('etiquetas.index') }}"
                             @class([
-                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[14px] transition-colors',
+                                'flex items-center gap-2 rounded-md px-2.5 py-1.5 text-[15px] transition-colors md:text-[14px]',
                                 'text-mv-accent font-medium bg-mv-accent-soft' => request()->routeIs('etiquetas.*'),
                                 'text-mv-text-secondary hover:bg-white/5 hover:text-mv-text' => !request()->routeIs('etiquetas.*'),
                             ])
@@ -217,7 +228,7 @@
             </header>
 
             {{-- Main scroll --}}
-            <main class="flex-1 overflow-auto p-6">
+            <main class="flex-1 overflow-auto p-4 sm:p-6">
                 {{ $slot }}
             </main>
         </div>

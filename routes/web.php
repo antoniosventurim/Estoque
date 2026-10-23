@@ -6,8 +6,8 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ConfiguracoesController;
 use App\Http\Controllers\CostCenterController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EtiquetaController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\ListaCompraController;
 use App\Http\Controllers\MovimentacoesController;
@@ -122,6 +122,7 @@ Route::middleware(['auth', 'permission'])->group(function () {
 
     // Configurações
     Route::get('/admin/configuracoes', [ConfiguracoesController::class, 'index'])->name('configuracoes');
+    Route::get('/admin/configuracoes/registros', [ConfiguracoesController::class, 'registros'])->name('configuracoes.registros');
     Route::post('/admin/configuracoes', [ConfiguracoesController::class, 'save'])->name('configuracoes.save');
 
     // Etiquetas / código de barras
