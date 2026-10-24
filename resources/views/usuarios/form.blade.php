@@ -4,7 +4,7 @@
         subtitle="{{ $user ? $user->name : 'Cadastre um acesso ao sistema' }}"
         icon="users"
     >
-        <x-app.btn as="a" href="{{ route('usuarios') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('usuarios') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

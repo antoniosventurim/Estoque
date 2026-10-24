@@ -4,7 +4,7 @@
         subtitle="{{ $role ? $role->name : 'Defina quem pode visualizar, criar, editar ou excluir' }}"
         icon="check"
     >
-        <x-app.btn as="a" href="{{ route('roles.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('roles.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

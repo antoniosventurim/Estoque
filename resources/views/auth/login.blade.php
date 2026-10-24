@@ -1,9 +1,16 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Entrar · Estoque</title>
+    <script>
+        (function () {
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="flex h-[100dvh] items-center justify-center overflow-hidden overscroll-none bg-mv-bg p-4 text-mv-text antialiased">
@@ -14,7 +21,7 @@
                     <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" fill="#c8102e"/></svg>
                 </div>
                 <div>
-                    <p class="m-0 text-base font-bold tracking-wider text-white">Meu Estoque</p>
+                    <p class="m-0 text-base font-bold tracking-wider text-mv-text">Meu Estoque</p>
                     <p class="m-0 text-xs text-mv-text-muted">São Mateus — Controle de Estoque</p>
                 </div>
             </div>
@@ -38,7 +45,7 @@
                     <input
                         id="email" type="email" name="email" value="{{ old('email') }}" required autofocus
                         placeholder="seu@email.com"
-                        class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2 text-[14px] text-mv-text outline-none transition-colors focus:border-blue-600"
+                        class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-accent dark:focus:border-blue-600"
                     >
                 </div>
 
@@ -47,7 +54,7 @@
                     <input
                         id="password" type="password" name="password" required
                         placeholder="••••••••"
-                        class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2 text-[14px] text-mv-text outline-none transition-colors focus:border-blue-600"
+                        class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-accent dark:focus:border-blue-600"
                     >
                 </div>
 

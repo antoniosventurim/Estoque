@@ -6,7 +6,7 @@
     />
 
     @if ($error = session('error'))
-        <x-app.card class="mb-4 p-4" style="border-color: #e8334a55; background: #8f0b2022">
+        <x-app.card class="mb-4 p-4" style="border-color: color-mix(in srgb, var(--color-mv-danger) 33%, transparent); background: var(--color-mv-danger-bg)">
             <div class="flex items-start gap-3">
                 <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-danger-solid text-white">
                     <x-app.icon name="warning" :size="16" />
@@ -110,6 +110,14 @@
         <div class="flex flex-wrap items-center gap-2 border-b border-mv-border px-4.5 py-3.5">
             <span class="text-mv-warning"><x-app.icon name="chart" size="16" /></span>
             <h2 class="m-0 flex-1 text-sm font-semibold text-mv-text">Próximos ao Estoque Mínimo</h2>
+            @if ($nearMinStock->isNotEmpty())
+                @can('lista-compra.create')
+                    <a href="{{ route('lista-compra.index', ['adicionar' => 1]) }}" class="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md bg-mv-accent px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90">
+                        <x-app.icon name="plus" :size="13" />
+                        Adicionar à Lista
+                    </a>
+                @endcan
+            @endif
             <span class="ml-auto shrink-0 whitespace-nowrap rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">Total de Itens: {{ $nearMinStock->count() }}</span>
         </div>
         <div class="overflow-x-auto">

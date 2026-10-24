@@ -9,7 +9,7 @@
 
         {{-- Mensagem --}}
         @if (session('success'))
-            <x-app.card class="p-4" style="border-color: #34c45a55; background: #1a6b3522">
+            <x-app.card class="p-4" style="border-color: color-mix(in srgb, var(--color-mv-success) 33%, transparent); background: var(--color-mv-success-bg)">
                 <div class="flex items-center gap-3">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-success-solid text-white">
                         <x-app.icon name="check" :size="16" />
@@ -20,7 +20,7 @@
         @endif
 
         @if ($errors->any())
-            <x-app.card class="p-4" style="border-color: #e8334a55; background: #8f0b2022">
+            <x-app.card class="p-4" style="border-color: color-mix(in srgb, var(--color-mv-danger) 33%, transparent); background: var(--color-mv-danger-bg)">
                 <div class="flex items-center gap-3">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-danger-solid text-white">
                         <x-app.icon name="warning" :size="16" />
@@ -84,7 +84,7 @@
                                 </div>
                                 <p class="mt-1 text-right text-[12px] text-mv-text-muted sm:text-center">+ sobra / - quebra</p>
                             </div>
-                            <div class="rounded-lg border p-4" id="preview-box" style="background: #222; border-color: #2e2e2e55">
+                            <div class="rounded-lg border p-4" id="preview-box" style="background: var(--color-mv-surface2); border-color: color-mix(in srgb, var(--color-mv-border) 33%, transparent)">
                                 <div class="flex items-center justify-between gap-3 sm:block">
                                     <p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p>
                                     <p id="preview-val" class="text-2xl font-bold text-mv-text-muted sm:mt-1">{{ $selected->stock }}</p>
@@ -103,8 +103,12 @@
                                     val.textContent = preview;
                                     const isDanger = adj < 0, isWarn = adj > 0, isOk = adj === 0;
                                     val.className = 'text-2xl font-bold sm:mt-1 ' + (isDanger ? 'text-mv-danger' : isWarn ? 'text-mv-success' : 'text-mv-text-muted');
-                                    box.style.background = isDanger ? '#8f0b2022' : isWarn ? '#1a6b3522' : '#222';
-                                    box.style.borderColor = (isDanger ? '#e8334a' : isWarn ? '#34c45a' : '#2e2e2e') + '55';
+                                    const danger = getComputedStyle(document.documentElement).getPropertyValue('--color-mv-danger').trim();
+                                    const success = getComputedStyle(document.documentElement).getPropertyValue('--color-mv-success').trim();
+                                    const surface2 = getComputedStyle(document.documentElement).getPropertyValue('--color-mv-surface2').trim();
+                                    const border = getComputedStyle(document.documentElement).getPropertyValue('--color-mv-border').trim();
+                                    box.style.background = isDanger ? 'color-mix(in srgb, ' + danger + ' 13%, transparent)' : isWarn ? 'color-mix(in srgb, ' + success + ' 13%, transparent)' : surface2;
+                                    box.style.borderColor = (isDanger ? danger : isWarn ? success : border) + '55';
                                 };
                                 input.addEventListener('input', paint);
                                 paint();

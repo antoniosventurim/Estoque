@@ -27,7 +27,7 @@
         @foreach ($options as $o)
             <button
                 type="button"
-                class="w-full border-b border-mv-border/50 px-3 py-2 text-left text-[14px] text-mv-text last:border-0 hover:bg-white/5"
+                class="w-full border-b border-mv-border/50 px-3 py-2 text-left text-[14px] text-mv-text last:border-0 hover:bg-black/[0.04] dark:hover:bg-white/5"
                 data-value="{{ $o['id'] }}"
                 data-display="{{ $o['name'] }}"
                 data-search="{{ Str::lower($o['name'].' '.($o['sub'] ?? '')) }}"

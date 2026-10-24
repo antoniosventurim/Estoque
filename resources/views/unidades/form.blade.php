@@ -4,7 +4,7 @@
         subtitle="{{ $unit ? $unit->name : 'Cadastre uma nova unidade de medida' }}"
         icon="ruler"
     >
-        <x-app.btn as="a" href="{{ route('unidades.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('unidades.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

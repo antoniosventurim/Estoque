@@ -22,7 +22,7 @@
                 </thead>
                 <tbody>
                     @forelse ($units as $i => $u)
-                        <tr class="border-b border-mv-border hover:bg-white/[0.02]">
+                        <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $i + 1 }}</td>
                             <td class="px-3.5 py-2.5 font-medium text-mv-text">{{ $u->name }}</td>
                             <td class="mono px-3.5 py-2.5 text-xs text-mv-text-secondary">{{ $u->abbreviation }}</td>

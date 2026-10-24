@@ -10,7 +10,7 @@
         <div class="relative w-full sm:min-w-[200px] sm:flex-1">
             <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mv-text-muted"><x-app.icon name="search" :size="14" /></div>
             <input type="text" name="q" value="{{ $search }}" placeholder="Buscar produto..."
-                class="w-full rounded-md border border-mv-border bg-mv-surface py-2 pl-8 pr-2.5 text-[14px] text-mv-text outline-none focus:border-blue-600">
+                class="w-full rounded-md border border-mv-border bg-mv-surface py-2 pl-8 pr-2.5 text-[14px] text-mv-text outline-none focus:border-mv-accent dark:focus:border-blue-600">
         </div>
         <div class="relative w-full sm:w-[180px]">
             <x-app.searchable-select
@@ -59,7 +59,7 @@
                 </thead>
                 <tbody>
                     @forelse ($movements as $i => $m)
-                        <tr class="border-b border-mv-border hover:bg-white/[0.02]">
+                        <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $movements->firstItem() + $i }}</td>
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center gap-2.5">

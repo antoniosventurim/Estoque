@@ -1,5 +1,5 @@
 @props(['title', 'message'])
-<x-app.card class="p-4" style="border-color: #e8334a55; background: #8f0b2022">
+<x-app.card class="p-4" style="border-color: color-mix(in srgb, var(--color-mv-danger) 33%, transparent); background: var(--color-mv-danger-bg)">
     <div class="flex items-start gap-3">
         <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-danger-solid text-white">
             <x-app.icon name="warning" :size="16" />

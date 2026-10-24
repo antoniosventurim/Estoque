@@ -3,6 +3,7 @@
 namespace App\Exports;
 
 use App\Models\Product;
+use App\Models\PurchaseListItem;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -16,19 +17,41 @@ class ListaCompraExport implements FromCollection, WithHeadings, WithMapping, Wi
 
     public function collection(): Collection
     {
-        return Product::with('category', 'unitModel')
+        $manualItems = PurchaseListItem::with('product')
+            ->get()
+            ->filter(fn (PurchaseListItem $item) => $item->product !== null)
+            ->values();
+        $manualProductIds = $manualItems->pluck('product_id');
+
+        $lowStock = Product::with('category', 'unitModel')
             ->whereColumn('stock', '<=', 'min_stock')
+            ->whereNotIn('id', $manualProductIds)
             ->orderBy('name')
             ->get();
+
+        return $lowStock
+            ->map(fn (Product $product) => [
+                'product' => $product,
+                'quantity' => $product->quantity_to_order,
+                'manual' => false,
+            ])
+            ->concat($manualItems->map(fn (PurchaseListItem $item) => [
+                'product' => $item->product,
+                'quantity' => $item->quantity,
+                'manual' => true,
+            ]))
+            ->values();
     }
 
     public function headings(): array
     {
-        return ['#', 'Produto', 'Categoria', 'Unidade', 'Estoque Atual', 'Estoque Mínimo', 'Estoque Máximo', 'Quantidade a Pedir'];
+        return ['#', 'Produto', 'Categoria', 'Unidade', 'Estoque Atual', 'Estoque Mínimo', 'Estoque Máximo', 'Quantidade a Pedir', 'Origem'];
     }
 
-    public function map($product): array
+    public function map($row): array
     {
+        $product = $row['product'];
+
         return [
             $this->row++,
             $product->name,
@@ -37,7 +60,8 @@ class ListaCompraExport implements FromCollection, WithHeadings, WithMapping, Wi
             $product->stock,
             $product->min_stock,
             $product->max_stock,
-            $product->quantity_to_order,
+            $row['quantity'],
+            $row['manual'] ? 'Adicionado manualmente' : 'Abaixo do mínimo',
         ];
     }
 

@@ -20,7 +20,7 @@ class PermissionMap
         'inventario' => ['label' => 'Inventário', 'actions' => ['view', 'create']],
         'movimentacoes' => ['label' => 'Movimentações', 'actions' => ['view']],
         'relatorios' => ['label' => 'Relatórios', 'actions' => ['view']],
-        'lista-compra' => ['label' => 'Lista de Compra', 'actions' => ['view']],
+        'lista-compra' => ['label' => 'Lista de Compra', 'actions' => ['view', 'create', 'delete']],
         'solicitacoes' => ['label' => 'Solicitações de Compra', 'actions' => ['view', 'create', 'receive', 'delete']],
         'centros-custo' => ['label' => 'Centros de Custo', 'actions' => ['view', 'create', 'edit', 'delete']],
         'categorias' => ['label' => 'Categorias', 'actions' => ['view', 'create', 'edit', 'delete']],
@@ -42,6 +42,8 @@ class PermissionMap
         'movimentacoes.view',
         'relatorios.view',
         'lista-compra.view',
+        'lista-compra.create',
+        'lista-compra.delete',
         'solicitacoes.view',
         'etiquetas.view',
     ];
@@ -76,6 +78,8 @@ class PermissionMap
         'relatorios' => 'relatorios.view',
         'lista-compra.index' => 'lista-compra.view',
         'lista-compra.export' => 'lista-compra.view',
+        'lista-compra.adicionar' => 'lista-compra.create',
+        'lista-compra.destroyItem' => 'lista-compra.delete',
 
         // Solicitações de compra
         'solicitacoes.index' => 'solicitacoes.view',

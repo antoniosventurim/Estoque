@@ -32,6 +32,7 @@ O sistema gerencia produtos com código de barras, movimentações de entrada/sa
 22. [Rotas do Sistema](#22-rotas-do-sistema)
 23. [Testes Automatizados](#23-testes-automatizados)
 24. [Estrutura de Diretórios](#24-estrutura-de-diretórios)
+25. [Publicação em Produção (Nginx)](#25-publicação-em-produção-nginx)
 
 ---
 
@@ -523,6 +524,50 @@ app-laravel/
 ├── tests/Feature/              (11 arquivos, 96 testes)
 ├── docker/, docker-compose.yml, Dockerfile
 └── .github/workflows/          (tests.yml)
+```
+
+---
+
+## 25. Publicação em Produção (Nginx)
+
+Checklist ao publicar/depois de um deploy:
+
+```bash
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php artisan migrate --force
+php artisan storage:link
+php artisan config:cache && php artisan route:cache && php artisan view:cache
+```
+
+### Imagens 403 no Nginx (caso registrado — HestiaCP)
+
+Sintoma: `GET /storage/produtos/*.png` → **403 Forbidden** e, no `error_log` do site (ex.: `/home/user/logs/nginx/error.log`, e não `/var/log/nginx/`):
+
+```
+openat() ".../public/storage/produtos/xxx.png" failed (40: Too many levels of symbolic links)
+```
+
+Causa: o HestiaCP habilita `disable_symlinks if_not_owner from=/home/;` no `/etc/nginx/nginx.conf` — o nginx se recusa a seguir o symlink `public/storage` se o dono do link difere do dono dos arquivos.
+
+Correções necessárias (como root, no diretório do site):
+
+```bash
+# 1. nginx (worker como usuário do painel, ex.: clp) precisa atravessar /home e htdocs
+chmod o+x /home/user /home/user/htdocs /home/user/htdocs/<site>
+
+# 2. dono do symlink deve ser o mesmo dos arquivos (NÃO altera o alvo, só o link)
+chown -h user:user public/storage
+```
+
+> **Atenção:** rodar `php artisan storage:link` como root recria o link com dono `root` e o 403 volta — rode como o usuário do site.
+
+Diagnóstico útil:
+
+```bash
+namei -l public/storage/produtos/<arquivo>.png   # permissão em cada nível do caminho
+sudo -u <user-do-nginx> cat public/storage/... > /dev/null && echo OK || echo NEGADO
+grep -rn "disable_symlinks" /etc/nginx/
 ```
 
 ---

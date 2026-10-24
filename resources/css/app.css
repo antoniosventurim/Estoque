@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import 'tailwindcss';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 * {
     box-sizing: border-box;
 }
@@ -13,8 +15,8 @@ body {
 }
 
 body {
-    background-color: #0f0f0f;
-    color: #f0f0f0;
+    background-color: var(--color-mv-bg);
+    color: var(--color-mv-text);
     font-family: 'Inter', system-ui, sans-serif;
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
@@ -28,11 +30,11 @@ body {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #2e2e2e;
+    background: var(--color-mv-border);
     border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #3d3d3d;
+    background: var(--color-mv-border-hover);
 }
 
 input,
@@ -103,8 +105,35 @@ select {
     }
 }
 
-/* Design tokens do estoque-layout */
+/* Design tokens do estoque-layout — tema Claro Corporativo (padrão) */
 @theme {
+    --color-mv-bg: #f3f4f6;
+    --color-mv-surface: #ffffff;
+    --color-mv-surface2: #f9fafb;
+    --color-mv-sidebar: #ffffff;
+    --color-mv-border: #e5e7eb;
+    --color-mv-border-hover: #d1d5db;
+    --color-mv-accent: #374151;
+    --color-mv-accent-hover: #1f2937;
+    --color-mv-accent-dark: #111827;
+    --color-mv-accent-soft: #37415114;
+    --color-mv-success: #16a34a;
+    --color-mv-success-solid: #15803d;
+    --color-mv-success-bg: #dcfce7;
+    --color-mv-warning: #d97706;
+    --color-mv-warning-solid: #b45309;
+    --color-mv-warning-bg: #fef3c7;
+    --color-mv-danger: #dc2626;
+    --color-mv-danger-solid: #b91c1c;
+    --color-mv-danger-bg: #fee2e2;
+    --color-mv-text: #111827;
+    --color-mv-text-secondary: #4b5563;
+    --color-mv-text-muted: #9ca3af;
+    --color-mv-avatar-op: #6b7280;
+}
+
+/* Design tokens — tema Escuro (legado) */
+.dark {
     --color-mv-bg: #0f0f0f;
     --color-mv-surface: #1a1a1a;
     --color-mv-surface2: #222222;
@@ -127,6 +156,7 @@ select {
     --color-mv-text: #f0f0f0;
     --color-mv-text-secondary: #999999;
     --color-mv-text-muted: #555555;
+    --color-mv-avatar-op: #7c3aed;
 }
 
 .dv-from,
@@ -141,7 +171,7 @@ select {
     width: 16px;
     height: 16px;
     margin: 0;
-    border: 2px solid #4a4e53;
+    border: 2px solid var(--color-mv-text-muted);
     border-radius: 4px;
     background: transparent;
     cursor: pointer;
@@ -149,8 +179,8 @@ select {
 }
 #bulk-products input[type="checkbox"]:checked,
 #print-form input[type="checkbox"]:checked {
-    background-color: #2563eb;
-    border-color: #2563eb;
+    background-color: var(--color-mv-accent);
+    border-color: var(--color-mv-accent);
 }
 
 [data-searchable-select] input:focus,

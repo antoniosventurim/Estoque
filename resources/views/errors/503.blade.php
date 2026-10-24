@@ -4,41 +4,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Erro 503 · Estoque</title>
+    <script>
+        (function () {
+            if (localStorage.getItem('theme') === 'light') {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-            background: #0f1117;
-            color: #e4e6eb;
+            background: #f3f4f6;
+            color: #111827;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 24px;
         }
+        .dark body { background: #0f1117; color: #e4e6eb; }
         .card {
-            background: #181b23;
-            border: 1px solid #2a2e3a;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 48px 40px;
             max-width: 440px;
             width: 100%;
             text-align: center;
         }
+        .dark .card { background: #181b23; border-color: #2a2e3a; }
         .icon-wrap {
             width: 64px;
             height: 64px;
             border-radius: 50%;
-            background: #2a2418;
-            border: 1px solid #e8a03333;
+            background: #fef3c7;
+            border: 1px solid #fde68a;
             display: flex;
             align-items: center;
             justify-content: center;
             margin: 0 auto 20px;
-            color: #e8a033;
+            color: #b45309;
         }
+        .dark .icon-wrap { background: #2a2418; border-color: #e8a03333; color: #e8a033; }
         h1 { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
-        p { font-size: 14px; color: #9ca3af; line-height: 1.6; margin-bottom: 28px; }
+        p { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 28px; }
+        .dark p { color: #9ca3af; }
         .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .btn {
             display: inline-flex;
@@ -54,9 +65,12 @@
             transition: opacity .15s;
         }
         .btn:hover { opacity: .85; }
-        .btn-primary { background: #c8102e; color: #fff; }
-        .btn-ghost { background: transparent; color: #9ca3af; border: 1px solid #2a2e3a; }
-        .code { font-size: 11px; color: #4b5060; margin-top: 24px; letter-spacing: .5px; }
+        .btn-primary { background: #374151; color: #fff; }
+        .dark .btn-primary { background: #c8102e; }
+        .btn-ghost { background: transparent; color: #6b7280; border: 1px solid #e5e7eb; }
+        .dark .btn-ghost { color: #9ca3af; border-color: #2a2e3a; }
+        .code { font-size: 11px; color: #9ca3af; margin-top: 24px; letter-spacing: .5px; }
+        .dark .code { color: #4b5060; }
     </style>
 </head>
 <body>

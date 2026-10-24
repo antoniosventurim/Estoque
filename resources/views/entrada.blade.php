@@ -9,7 +9,7 @@
 
         {{-- Sucesso --}}
         @if ($success = session('success'))
-            <x-app.card id="entrada-success-card" class="p-5" style="border-color: #34c45a55; background: #1a6b3522">
+            <x-app.card id="entrada-success-card" class="p-5" style="border-color: color-mix(in srgb, var(--color-mv-success) 33%, transparent); background: var(--color-mv-success-bg)">
                 <div class="mb-3 flex items-start gap-2.5">
                     <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-success-solid text-white">
                         <x-app.icon name="check" :size="16" />

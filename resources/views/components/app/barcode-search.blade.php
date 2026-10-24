@@ -19,7 +19,7 @@
 </form>
 
 @if ($notFound ?? false)
-    <div class="mt-4 flex items-center gap-2.5 rounded-md px-3 py-2.5 text-[14px] text-mv-danger" style="background:#8f0b2022; border:1px solid #e8334a55">
+    <div class="mt-4 flex items-center gap-2.5 rounded-md px-3 py-2.5 text-[14px] text-mv-danger" style="background: var(--color-mv-danger-bg); border: 1px solid color-mix(in srgb, var(--color-mv-danger) 33%, transparent)">
         <x-app.icon name="warning" :size="16" />
         Produto não encontrado para o código informado.
     </div>

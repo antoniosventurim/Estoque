@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
                     @forelse ($requests as $i => $r)
-                        <tr class="border-b border-mv-border hover:bg-white/[0.02]">
+                        <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $requests->firstItem() + $i }}</td>
                             <td class="px-3.5 py-2.5 text-center font-semibold text-mv-text">{{ $r->items_count }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $r->user->name ?? '—' }}</td>

@@ -4,7 +4,7 @@
         subtitle="{{ $employee ? $employee->name : 'Cadastre um funcionário para vínculo nas retiradas' }}"
         icon="user"
     >
-        <x-app.btn as="a" href="{{ route('funcionarios.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('funcionarios.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

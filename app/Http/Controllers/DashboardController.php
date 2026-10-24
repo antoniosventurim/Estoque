@@ -23,7 +23,7 @@ class DashboardController extends Controller
         $nearMinStock = Product::with('category')
             ->where('min_stock', '>', 0)
             ->whereColumn('stock', '>', 'min_stock')
-            ->whereRaw('stock <= min_stock * (1 + ? / 100)', [$alertMargin])
+            ->whereRaw('stock * 100 <= min_stock * (100 + ?)', [$alertMargin])
             ->orderBy('stock')
             ->get();
 

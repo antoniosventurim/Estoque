@@ -2,9 +2,10 @@
 @php
     $styles = [
         'primary' => 'bg-mv-accent text-white hover:bg-mv-accent-hover',
-        'secondary' => 'bg-mv-surface2 text-white border border-mv-border hover:border-mv-border-hover',
+        'secondary' => 'bg-mv-surface2 text-mv-text border border-mv-border hover:border-mv-border-hover',
         'danger' => 'bg-mv-danger-solid text-white hover:opacity-90',
         'ghost' => 'bg-transparent text-mv-text-secondary border border-mv-border hover:text-mv-text hover:border-mv-border-hover',
+        'back' => 'bg-mv-accent text-white border border-transparent hover:bg-mv-accent-hover',
     ];
     $pads = ['sm' => 'px-3 py-1.5 text-xs', 'md' => 'px-4 py-2 text-[14px]'];
     $classes = "inline-flex items-center gap-1.5 rounded-md font-medium transition-opacity disabled:opacity-40 disabled:cursor-not-allowed {$styles[$variant]} {$pads[$size]}";

@@ -64,6 +64,8 @@ Route::middleware(['auth', 'permission'])->group(function () {
     Route::get('/admin/relatorios', [RelatorioController::class, 'index'])->name('relatorios');
     Route::get('/admin/lista-compra', [ListaCompraController::class, 'index'])->name('lista-compra.index');
     Route::get('/admin/lista-compra/export', [ListaCompraController::class, 'export'])->name('lista-compra.export');
+    Route::post('/admin/lista-compra/adicionar', [ListaCompraController::class, 'addItems'])->name('lista-compra.adicionar');
+    Route::delete('/admin/lista-compra/itens/{id}', [ListaCompraController::class, 'destroyItem'])->whereNumber('id')->name('lista-compra.destroyItem');
 
     // Solicitações de compra
     Route::get('/admin/solicitacoes', [PurchaseRequestController::class, 'index'])->name('solicitacoes.index');

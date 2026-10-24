@@ -8,6 +8,7 @@ use App\Models\Employee;
 use App\Models\Product;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestItem;
+use App\Models\PurchaseListItem;
 use App\Models\Setting;
 use App\Models\Unit;
 use App\Models\User;
@@ -27,6 +28,7 @@ class ActivityLogMap
         Product::class => 'Produto',
         PurchaseRequest::class => 'Solicitação de Compra',
         PurchaseRequestItem::class => 'Item de Solicitação',
+        PurchaseListItem::class => 'Item da Lista de Compra',
         Setting::class => 'Configuração',
         Unit::class => 'Unidade de Medida',
         User::class => 'Usuário',

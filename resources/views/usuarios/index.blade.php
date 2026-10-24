@@ -33,7 +33,7 @@
                         <tr class="border-b border-mv-border">
                             <td class="px-4 py-3">
                                 <div class="flex items-center gap-2.5">
-                                    <div class="flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white" style="background: {{ $u->is_admin ? '#c8102e' : '#7c3aed' }}">{{ $init }}</div>
+                                    <div class="flex h-[30px] w-[30px] flex-shrink-0 items-center justify-center rounded-full text-[13px] font-bold text-white" style="background: {{ $u->is_admin ? 'var(--color-mv-accent)' : 'var(--color-mv-avatar-op)' }}">{{ $init }}</div>
                                     <span class="font-medium text-mv-text">{{ $u->name }}</span>
                                 </div>
                             </td>

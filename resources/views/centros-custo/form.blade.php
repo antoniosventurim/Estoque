@@ -4,7 +4,7 @@
         subtitle="{{ $costCenter ? $costCenter->name : 'Cadastre um curso, setor ou laboratório' }}"
         icon="building"
     >
-        <x-app.btn as="a" href="{{ route('centros-custo.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('centros-custo.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

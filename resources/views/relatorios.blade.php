@@ -166,7 +166,7 @@
                                 <p class="m-0 text-xs font-bold text-mv-warning">{{ $p->stock }} {{ $p->unit }} <span class="font-normal text-mv-text-muted">(mín: {{ $p->min_stock }}, {{ $pct }}%)</span></p>
                             </div>
                             <div class="h-1 overflow-hidden rounded bg-mv-surface2">
-                                <div class="h-full rounded" style="width: {{ min($pct, 150) > 100 ? 100 : min($pct, 150) }}%; background:#e09b2a"></div>
+                                <div class="h-full rounded" style="width: {{ min($pct, 150) > 100 ? 100 : min($pct, 150) }}%; background: var(--color-mv-warning)"></div>
                             </div>
                         </div>
                     @endforeach

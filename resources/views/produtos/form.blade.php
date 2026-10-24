@@ -4,7 +4,7 @@
         subtitle="{{ $product ? $product->name : 'Cadastre um novo item no estoque' }}"
         icon="box"
     >
-        <x-app.btn as="a" href="{{ route('produtos.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('produtos.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />

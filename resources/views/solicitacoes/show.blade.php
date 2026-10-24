@@ -4,7 +4,7 @@
         subtitle="Solicitada em {{ $purchaseRequest->created_at->format('d/m/Y H:i') }} por {{ $purchaseRequest->user->name ?? '—' }}"
         icon="check"
     >
-        <x-app.btn as="a" href="{{ route('solicitacoes.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('solicitacoes.index') }}" variant="back">Voltar</x-app.btn>
         @if ($purchaseRequest->isReceivable())
             <x-app.btn type="button" icon="check" data-open-receive="{{ $purchaseRequest->id }}">
                 {{ $purchaseRequest->isPartial() ? 'Receber Restante' : 'Marcar como Recebida' }}
@@ -95,7 +95,7 @@
                     </thead>
                     <tbody>
                         @foreach ($missingItems as $i => $item)
-                            <tr class="border-b border-mv-border hover:bg-white/[0.02]">
+                            <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                                 <td class="px-4 py-3 text-center text-mv-text-muted">{{ $i + 1 }}</td>
                                 <td class="px-4 py-3 text-left font-medium text-mv-text">{{ $item->product->name ?? '—' }}</td>
                                 <td class="px-4 py-3 text-center text-mv-text-secondary">{{ $item->product->unitModel->name ?? $item->product->unit ?? '—' }}</td>
@@ -131,7 +131,7 @@
                     </thead>
                     <tbody>
                         @forelse ($purchaseRequest->items as $i => $item)
-                            <tr class="border-b border-mv-border hover:bg-white/[0.02]">
+                            <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                                 <td class="px-4 py-3 text-center text-mv-text-muted">{{ $i + 1 }}</td>
                                 <td class="px-4 py-3 font-medium text-mv-text">{{ $item->product->name ?? '—' }}</td>
                                 <td class="px-4 py-3 text-mv-text-secondary">{{ $item->product->category->name ?? '—' }}</td>

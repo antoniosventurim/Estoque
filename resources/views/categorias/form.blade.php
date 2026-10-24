@@ -4,7 +4,7 @@
         subtitle="{{ $category ? $category->name : 'Cadastre uma nova categoria' }}"
         icon="tag"
     >
-        <x-app.btn as="a" href="{{ route('categorias.index') }}" variant="ghost">Voltar</x-app.btn>
+        <x-app.btn as="a" href="{{ route('categorias.index') }}" variant="back">Voltar</x-app.btn>
     </x-app.page-header>
 
     <x-app.errors />
