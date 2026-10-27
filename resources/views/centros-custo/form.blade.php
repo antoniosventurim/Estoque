@@ -30,14 +30,6 @@
 
             <x-app.input label="Código" name="code" value="{{ old('code', $costCenter->code ?? '') }}" placeholder="Ex: MED" mono maxlength="20" />
 
-            <div>
-                <label class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Cor</label>
-                <div class="flex items-center gap-3">
-                    <input type="color" name="color" value="{{ old('color', $costCenter->color ?? '#c8102e') }}" class="h-10 w-10 cursor-pointer rounded border border-mv-border bg-mv-surface2">
-                    <span class="text-[14px] text-mv-text-muted">Cor do centro de custo (opcional)</span>
-                </div>
-            </div>
-
             <div class="flex items-end sm:col-span-2">
                 <x-bladewind::checkbox
                     name="is_active"

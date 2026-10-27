@@ -78,7 +78,9 @@ class PermissionMap
         'relatorios' => 'relatorios.view',
         'lista-compra.index' => 'lista-compra.view',
         'lista-compra.export' => 'lista-compra.view',
+        'lista-compra.buscar' => 'lista-compra.create',
         'lista-compra.adicionar' => 'lista-compra.create',
+        'lista-compra.adicionarManual' => 'lista-compra.create',
         'lista-compra.destroyItem' => 'lista-compra.delete',
 
         // Solicitações de compra

@@ -56,7 +56,7 @@
                             <td class="px-4 py-3">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('usuarios.edit', $u) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('usuarios.destroy', $u) }}" onsubmit="return confirm('Excluir este usuário?')">
+                                    <form method="POST" action="{{ route('usuarios.destroy', $u) }}" data-confirm-title="Excluir usuário" data-confirm-name="{{ $u->name }}" data-confirm-message="O login será bloqueado imediatamente e o usuário não conseguirá mais acessar o sistema." data-confirm-accept="Excluir usuário">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>

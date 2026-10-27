@@ -13,6 +13,7 @@
         <x-app.btn as="a" href="{{ route('solicitacoes.index') }}" icon="check">Acompanhar Solicitações</x-app.btn>
         <x-app.btn as="a" href="{{ route('lista-compra.export') }}" icon="download">Baixar Excel</x-app.btn>
         @can('lista-compra.create')
+            <x-app.btn type="button" icon="plus" data-open-manual>Adicionar Itens</x-app.btn>
             @if ($hasAddable)
                 <x-app.btn type="button" icon="plus" data-open-add>Adicionar Próximos</x-app.btn>
             @endif
@@ -70,22 +71,20 @@
                                 <td class="px-4 py-3 text-center font-semibold text-green-600">{{ $manual ? $manual->quantity : $p->quantity_to_order }}</td>
                                 <td class="px-4 py-3 text-center">
                                     @if ($manual)
-                                        <span class="rounded-full bg-mv-accent-soft px-2 py-0.5 text-[13px] font-semibold text-mv-accent">Adicionado manualmente</span>
+                                        <span class="inline-block whitespace-nowrap rounded-full bg-mv-accent-soft px-3 py-1 text-[13px] font-semibold leading-snug text-mv-accent">Adicionado manualmente</span>
                                     @elseif ($pendingProductIds->contains($p->id))
-                                        <span class="rounded-full bg-mv-warning-bg px-2 py-0.5 text-[13px] font-semibold text-mv-warning">Aguardando recebimento</span>
+                                        <span class="inline-block whitespace-nowrap rounded-full bg-mv-warning-bg px-3 py-1 text-[13px] font-semibold leading-snug text-mv-warning">Aguardando recebimento</span>
                                     @else
-                                        <span class="text-mv-text-muted">—</span>
+                                        <span class="inline-block whitespace-nowrap rounded-full border border-mv-border bg-mv-surface2 px-3 py-1 text-[13px] font-semibold leading-snug text-mv-text-secondary">Adicionado automaticamente</span>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-center">
                                     @if ($manual)
                                         @can('lista-compra.delete')
-                                            <form method="POST" action="{{ route('lista-compra.destroyItem', $manual->id) }}" class="inline" onsubmit="return confirm('Remover este item da lista de compra?')">
+                                            <form method="POST" action="{{ route('lista-compra.destroyItem', $manual->id) }}" class="inline" data-confirm-title="Remover item da lista" data-confirm-name="{{ $p->name }}" data-confirm-message="O item sairá da lista de compra e voltará a contar apenas pelo cálculo automático de mínimo/máximo." data-confirm-accept="Remover item">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-mv-text-muted transition-colors hover:text-mv-danger" title="Remover da lista">
-                                                    <x-app.icon name="trash" :size="15" />
-                                                </button>
+                                                <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                             </form>
                                         @endcan
                                     @else
@@ -174,6 +173,44 @@
                 </div>
             </div>
         @endif
+    @endcan
+
+    @can('lista-compra.create')
+        {{-- Modal: adicionar itens manualmente (busca por nome) --}}
+        <div id="manual-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
+            <div class="w-full max-w-xl rounded-lg border border-mv-border bg-mv-surface shadow-2xl">
+                <div class="border-b border-mv-border px-5 py-4">
+                    <h3 class="m-0 text-[15px] font-semibold text-mv-text">Adicionar Itens à Lista de Compra</h3>
+                    <p class="mt-1 text-[14px] text-mv-text-secondary">
+                        Busque o produto pelo nome ou código, selecione e confirme. Itens adicionados assim entram como
+                        <strong>adicionados manualmente</strong>.
+                    </p>
+                </div>
+
+                <form method="POST" action="{{ route('lista-compra.adicionarManual') }}" data-manual-form>
+                    @csrf
+
+                    <div class="px-5 py-4">
+                        <div class="relative">
+                            <div class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mv-text-muted"><x-app.icon name="search" :size="15" /></div>
+                            <input type="text" data-manual-search placeholder="Buscar produto pelo nome ou código..."
+                                autocomplete="off"
+                                class="w-full rounded-md border border-mv-border bg-mv-surface2 py-2.5 pl-9 pr-3 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-accent" />
+                        </div>
+
+                        <div data-manual-results class="mt-2 hidden max-h-44 overflow-y-auto rounded-md border border-mv-border"></div>
+
+                        <p data-manual-empty class="mt-3 text-[13px] text-mv-text-muted">Nenhum item selecionado ainda.</p>
+                        <div data-manual-selected class="mt-3 space-y-2"></div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 border-t border-mv-border px-5 py-3">
+                        <button type="button" data-manual-cancel class="rounded-md border border-mv-border bg-mv-surface2 px-4 py-2 text-[14px] font-medium text-mv-text-secondary transition-colors hover:border-mv-border-hover">Cancelar</button>
+                        <button type="submit" data-manual-submit class="rounded-md bg-mv-accent px-4 py-2 text-[14px] font-medium text-white transition-opacity hover:opacity-90">Confirmar adição</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     @endcan
 
     @if ($hasGenerate)
@@ -270,6 +307,136 @@
             }
 
             setupModal(document.getElementById('generate-modal'), '[data-open-generate]', '[data-generate-cancel]');
+
+            // ── Modal de adição manual (busca por nome) ────────────────
+            var manualModal = document.getElementById('manual-modal');
+            var manual = setupModal(manualModal, '[data-open-manual]', '[data-manual-cancel]');
+
+            if (manualModal) {
+                var searchInput = manualModal.querySelector('[data-manual-search]');
+                var resultsBox = manualModal.querySelector('[data-manual-results]');
+                var selectedBox = manualModal.querySelector('[data-manual-selected]');
+                var emptyMsg = manualModal.querySelector('[data-manual-empty]');
+                var manualForm = manualModal.querySelector('[data-manual-form]');
+                var selected = {};
+                var searchTimer = null;
+
+                function escapeHtml(value) {
+                    return String(value).replace(/[&<>"']/g, function (c) {
+                        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[c];
+                    });
+                }
+
+                function renderResults(items) {
+                    resultsBox.innerHTML = '';
+
+                    if (!items.length) {
+                        resultsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    items.forEach(function (item) {
+                        if (selected[item.id]) return;
+
+                        var row = document.createElement('button');
+                        row.type = 'button';
+                        row.className = 'flex w-full items-center justify-between gap-3 border-b border-mv-border px-3 py-2.5 text-left text-[14px] text-mv-text transition-colors last:border-b-0 hover:bg-mv-surface2';
+                        row.innerHTML =
+                            '<span class="font-medium">' + escapeHtml(item.name) + '</span>' +
+                            '<span class="shrink-0 text-[12px] text-mv-text-muted">Estoque: ' + escapeHtml(item.stock) + ' ' + escapeHtml(item.unit || '') + '</span>';
+                        row.addEventListener('click', function () {
+                            addSelected(item);
+                            searchInput.value = '';
+                            resultsBox.classList.add('hidden');
+                            searchInput.focus();
+                        });
+                        resultsBox.appendChild(row);
+                    });
+
+                    resultsBox.classList.toggle('hidden', resultsBox.children.length === 0);
+                }
+
+                function addSelected(item) {
+                    if (selected[item.id]) return;
+
+                    selected[item.id] = { name: item.name, quantity: item.quantity, stock: item.stock, maxStock: item.max_stock };
+                    renderSelected();
+                }
+
+                function renderSelected() {
+                    selectedBox.innerHTML = '';
+                    var ids = Object.keys(selected);
+
+                    emptyMsg.classList.toggle('hidden', ids.length > 0);
+
+                    ids.forEach(function (id) {
+                        var item = selected[id];
+                        var row = document.createElement('div');
+                        row.className = 'flex items-center gap-2 rounded-md border border-mv-border bg-mv-surface2 px-3 py-2';
+                        row.innerHTML =
+                            '<span class="flex-1 text-[14px] font-medium text-mv-text">' + escapeHtml(item.name) +
+                            '<span class="ml-2 text-[12px] font-normal text-mv-text-muted">Atual: ' + escapeHtml(item.stock) + ' | Máx: ' + escapeHtml(item.maxStock) + '</span></span>' +
+                            '<input type="hidden" name="product_ids[]" value="' + escapeHtml(id) + '">' +
+                            '<label class="text-[12px] text-mv-text-secondary">Qtd:</label>' +
+                            '<input type="number" name="quantities[' + escapeHtml(id) + ']" min="1" step="1" value="' + escapeHtml(item.quantity) + '"' +
+                            ' class="w-20 rounded-md border border-mv-border bg-mv-surface px-2 py-1 text-center text-[14px] font-semibold text-green-600 outline-none">' +
+                            '<button type="button" class="text-mv-text-muted transition-colors hover:text-mv-danger" title="Remover">' +
+                            '<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>';
+                        row.querySelector('button').addEventListener('click', function () {
+                            delete selected[id];
+                            renderSelected();
+                        });
+                        selectedBox.appendChild(row);
+                    });
+                }
+
+                searchInput.addEventListener('input', function () {
+                    clearTimeout(searchTimer);
+                    var term = searchInput.value.trim();
+
+                    if (term.length < 2) {
+                        resultsBox.classList.add('hidden');
+                        return;
+                    }
+
+                    searchTimer = setTimeout(function () {
+                        fetch('{{ route('lista-compra.buscar') }}?q=' + encodeURIComponent(term), {
+                            headers: { 'Accept': 'application/json' }
+                        })
+                            .then(function (response) { return response.json(); })
+                            .then(renderResults)
+                            .catch(function () { resultsBox.classList.add('hidden'); });
+                    }, 250);
+                });
+
+                document.addEventListener('click', function (event) {
+                    if (!manualModal.contains(event.target)) {
+                        resultsBox.classList.add('hidden');
+                    }
+                });
+
+                manualForm.addEventListener('submit', function (event) {
+                    if (!Object.keys(selected).length) {
+                        event.preventDefault();
+                        return;
+                    }
+
+                    if (Object.keys(selected).length) {
+                        // Impede envio de quantidades inválidas.
+                        Array.prototype.forEach.call(manualForm.querySelectorAll('input[type="number"]'), function (input) {
+                            if (parseInt(input.value, 10) < 1) input.value = 1;
+                        });
+                    }
+                });
+
+                if (manual) {
+                    var manualOpen = manual.open;
+                    manual.open = function () {
+                        manualOpen();
+                        setTimeout(function () { searchInput.focus(); }, 50);
+                    };
+                }
+            }
 
             var addModal = document.getElementById('add-modal');
             var add = setupModal(addModal, '[data-open-add]', '[data-add-cancel]');

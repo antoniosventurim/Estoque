@@ -193,3 +193,20 @@ select {
     border-width: 1px;
     padding-block: 8px;
 }
+
+/* Filtros de período (Relatórios): realça os campos de data */
+#filtro-periodo .bw-input {
+    border-color: var(--color-mv-border-hover) !important;
+    background-color: var(--color-mv-surface) !important;
+    color: var(--color-mv-text) !important;
+}
+#filtro-periodo .bw-input::placeholder {
+    color: var(--color-mv-text-secondary) !important;
+}
+#filtro-periodo .suffix svg {
+    color: var(--color-mv-text-secondary) !important;
+    opacity: 1 !important;
+}
+#filtro-periodo .bw-input:focus {
+    border-color: var(--color-mv-accent) !important;
+}

@@ -9,7 +9,9 @@ use App\Models\PurchaseListItem;
 use App\Models\PurchaseRequest;
 use App\Models\PurchaseRequestItem;
 use App\Models\Setting;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -100,6 +102,82 @@ class ListaCompraController extends Controller
 
             if ($quantity < 1) {
                 continue;
+            }
+
+            PurchaseListItem::firstOrCreate(
+                ['product_id' => $product->id],
+                ['quantity' => $quantity, 'user_id' => auth()->id()]
+            );
+
+            $added++;
+        }
+
+        if ($added === 0) {
+            return redirect()->route('lista-compra.index')->with('error', 'Nenhum item novo para adicionar.');
+        }
+
+        return redirect()->route('lista-compra.index')->with('status', "{$added} item(ns) adicionado(s) à lista de compra.");
+    }
+
+    /**
+     * Busca de produtos para o modal de adição manual (JSON).
+     */
+    public function search(Request $request): JsonResponse
+    {
+        $query = trim((string) $request->input('q', ''));
+
+        if (mb_strlen($query) < 2) {
+            return response()->json([]);
+        }
+
+        $listedIds = PurchaseListItem::pluck('product_id');
+
+        $products = Product::with('unitModel')
+            ->where('is_active', true)
+            ->whereNotIn('id', $listedIds)
+            ->where(function ($q) use ($query) {
+                $q->where('name', 'like', "%{$query}%")
+                    ->orWhere('barcode', 'like', "%{$query}%");
+            })
+            ->orderBy('name')
+            ->limit(15)
+            ->get()
+            ->map(fn (Product $product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'barcode' => $product->barcode,
+                'stock' => $product->stock,
+                'min_stock' => $product->min_stock,
+                'max_stock' => $product->max_stock,
+                'unit' => $product->unitModel?->name ?? $product->unit,
+                'category' => $product->category?->name,
+                'quantity' => max(1, $product->quantity_to_order),
+            ]);
+
+        return response()->json($products);
+    }
+
+    /**
+     * Adição manual de itens buscados no modal (qualquer produto ativo).
+     */
+    public function addManual(PurchaseListAddRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $quantities = $data['quantities'];
+
+        $listedIds = PurchaseListItem::whereIn('product_id', $data['product_ids'])->pluck('product_id');
+
+        $candidates = Product::whereIn('id', $data['product_ids'])
+            ->whereNotIn('id', $listedIds)
+            ->get();
+
+        $added = 0;
+
+        foreach ($candidates as $product) {
+            $quantity = (int) ($quantities[$product->id] ?? 0);
+
+            if ($quantity < 1) {
+                $quantity = max(1, $product->quantity_to_order);
             }
 
             PurchaseListItem::firstOrCreate(

@@ -230,7 +230,7 @@
                 </div>
             </div>
 
-            <button type="button" id="saida-submit-btn" class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-mv-danger py-3.5 text-[15px] font-semibold text-white shadow-sm hover:opacity-90">
+            <button type="button" id="saida-submit-btn" class="mt-5 flex w-full items-center justify-center gap-2.5 rounded-lg bg-mv-accent py-3.5 text-[15px] font-semibold text-white shadow-sm hover:bg-mv-accent-hover">
                 <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
                 Registrar Saídas
             </button>

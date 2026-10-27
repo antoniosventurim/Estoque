@@ -25,7 +25,9 @@ Route::get('/', fn () => redirect()->route('dashboard'));
 // Autenticação
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'show'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->name('login.post');
+    Route::post('/login', [LoginController::class, 'login'])
+        ->middleware('throttle:5,1')
+        ->name('login.post');
 });
 
 Route::post('/logout', [LoginController::class, 'logout'])
@@ -64,7 +66,9 @@ Route::middleware(['auth', 'permission'])->group(function () {
     Route::get('/admin/relatorios', [RelatorioController::class, 'index'])->name('relatorios');
     Route::get('/admin/lista-compra', [ListaCompraController::class, 'index'])->name('lista-compra.index');
     Route::get('/admin/lista-compra/export', [ListaCompraController::class, 'export'])->name('lista-compra.export');
+    Route::get('/admin/lista-compra/buscar', [ListaCompraController::class, 'search'])->name('lista-compra.buscar');
     Route::post('/admin/lista-compra/adicionar', [ListaCompraController::class, 'addItems'])->name('lista-compra.adicionar');
+    Route::post('/admin/lista-compra/adicionar-manual', [ListaCompraController::class, 'addManual'])->name('lista-compra.adicionarManual');
     Route::delete('/admin/lista-compra/itens/{id}', [ListaCompraController::class, 'destroyItem'])->whereNumber('id')->name('lista-compra.destroyItem');
 
     // Solicitações de compra

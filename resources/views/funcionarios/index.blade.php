@@ -40,7 +40,7 @@
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('funcionarios.edit', $e) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('funcionarios.destroy', $e) }}" onsubmit="return confirm('Excluir este funcionário?')">
+                                    <form method="POST" action="{{ route('funcionarios.destroy', $e) }}" data-confirm-title="Excluir funcionário" data-confirm-name="{{ $e->name }}" data-confirm-message="O cadastro deste funcionário será removido e ele não poderá ser selecionado em novas saídas." data-confirm-accept="Excluir funcionário">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>

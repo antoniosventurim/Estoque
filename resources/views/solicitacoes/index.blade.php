@@ -76,7 +76,7 @@
                                         <x-app.btn type="button" size="sm" icon="check" data-open-receive="{{ $r->id }}">Recebida</x-app.btn>
                                     @endif
                                     @if ($r->isPending())
-                                        <form method="POST" action="{{ route('solicitacoes.destroy', $r) }}" onsubmit="return confirm('Excluir esta solicitação?')">
+                                        <form method="POST" action="{{ route('solicitacoes.destroy', $r) }}" data-confirm-title="Excluir solicitação" data-confirm-name="Solicitação #{{ $r->id }}" data-confirm-message="Os {{ $r->items_count }} item(ns) vinculados serão removidos da fila de compra e nenhum pedido será gerado." data-confirm-accept="Excluir solicitação">
                                             @csrf @method('DELETE')
                                             <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                         </form>

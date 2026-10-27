@@ -41,7 +41,7 @@
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('roles.edit', $role) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
                                     @if ($role->name !== $builtinRole)
-                                        <form method="POST" action="{{ route('roles.destroy', $role) }}" onsubmit="return confirm('Excluir este perfil? Usuários que o utilizam perderão as permissões dele.')">
+                                        <form method="POST" action="{{ route('roles.destroy', $role) }}" data-confirm-title="Excluir perfil" data-confirm-name="{{ $role->name }}" data-confirm-message="Os usuários que utilizam este perfil perderão todas as permissões dele e poderão ficar sem acesso a recursos do sistema." data-confirm-accept="Excluir perfil">
                                             @csrf @method('DELETE')
                                             <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                         </form>

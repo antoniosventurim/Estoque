@@ -5,7 +5,6 @@ namespace Tests\Feature;
 use App\Models\Product;
 use App\Models\PurchaseListItem;
 use App\Models\PurchaseRequest;
-use App\Models\PurchaseRequestItem;
 use App\Models\User;
 use App\Support\PermissionMap;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -168,6 +167,122 @@ class PurchaseListAddTest extends TestCase
         ])->assertSessionHasErrors('quantities.'.$product->id);
 
         $this->assertDatabaseCount('purchase_list_items', 0);
+    }
+
+    // ── Adição manual com busca (modal) ───────────────────────────────
+
+    public function test_search_returns_active_products_json(): void
+    {
+        Product::factory()->create(['name' => 'Café Torrado', 'stock' => 100, 'min_stock' => 10, 'max_stock' => 0]);
+        Product::factory()->create(['name' => 'Produto Inativo', 'is_active' => false]);
+
+        $this->actingAs($this->admin)->get(route('lista-compra.buscar', ['q' => 'Café']))
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['name' => 'Café Torrado']);
+    }
+
+    public function test_search_requires_minimum_length_and_excludes_listed_products(): void
+    {
+        $listed = $this->nearMinProduct(['name' => 'Arroz Longo']);
+        PurchaseListItem::create(['product_id' => $listed->id, 'quantity' => 3, 'user_id' => $this->admin->id]);
+        Product::factory()->create(['name' => 'Arroz Branco']);
+
+        $this->actingAs($this->admin)->get(route('lista-compra.buscar', ['q' => 'a']))
+            ->assertOk()
+            ->assertExactJson([]);
+
+        $this->actingAs($this->admin)->get(route('lista-compra.buscar', ['q' => 'Arroz']))
+            ->assertOk()
+            ->assertJsonCount(1)
+            ->assertJsonFragment(['name' => 'Arroz Branco']);
+    }
+
+    public function test_add_manual_creates_entries_for_any_active_product(): void
+    {
+        $farProduct = Product::factory()->create(['name' => 'Produto Longe', 'stock' => 100, 'min_stock' => 10, 'max_stock' => 200]);
+        $belowProduct = Product::factory()->create(['name' => 'Produto Abaixo', 'stock' => 1, 'min_stock' => 10, 'max_stock' => 50]);
+
+        $this->actingAs($this->admin)->post(route('lista-compra.adicionarManual'), [
+            'product_ids' => [$farProduct->id, $belowProduct->id],
+            'quantities' => [$farProduct->id => 8, $belowProduct->id => 4],
+        ])->assertRedirect(route('lista-compra.index'))
+            ->assertSessionHas('status');
+
+        $this->assertDatabaseHas('purchase_list_items', [
+            'product_id' => $farProduct->id,
+            'quantity' => 8,
+            'user_id' => $this->admin->id,
+        ]);
+        $this->assertDatabaseHas('purchase_list_items', [
+            'product_id' => $belowProduct->id,
+            'quantity' => 4,
+            'user_id' => $this->admin->id,
+        ]);
+
+        $this->actingAs($this->admin)->get(route('lista-compra.index'))
+            ->assertOk()
+            ->assertSee('Adicionado manualmente');
+    }
+
+    public function test_add_manual_skips_already_listed_products(): void
+    {
+        $product = $this->nearMinProduct();
+        PurchaseListItem::create(['product_id' => $product->id, 'quantity' => 3, 'user_id' => $this->admin->id]);
+
+        $this->actingAs($this->admin)->post(route('lista-compra.adicionarManual'), [
+            'product_ids' => [$product->id],
+            'quantities' => [$product->id => 10],
+        ])->assertRedirect(route('lista-compra.index'))
+            ->assertSessionHas('error');
+
+        $this->assertDatabaseCount('purchase_list_items', 1);
+        $this->assertDatabaseHas('purchase_list_items', ['product_id' => $product->id, 'quantity' => 3]);
+    }
+
+    public function test_add_manual_logs_activity_with_causer(): void
+    {
+        $product = Product::factory()->create(['name' => 'Item Logado', 'stock' => 100, 'min_stock' => 10]);
+
+        $this->actingAs($this->admin)->post(route('lista-compra.adicionarManual'), [
+            'product_ids' => [$product->id],
+            'quantities' => [$product->id => 5],
+        ])->assertRedirect(route('lista-compra.index'));
+
+        $this->assertDatabaseHas('activity_log', [
+            'log_name' => 'estoque',
+            'event' => 'created',
+            'subject_type' => PurchaseListItem::class,
+            'causer_type' => \App\Models\User::class,
+            'causer_id' => $this->admin->id,
+        ]);
+    }
+
+    public function test_search_and_add_manual_require_create_permission(): void
+    {
+        $product = $this->nearMinProduct();
+        $viewer = User::factory()->create(['is_admin' => false]);
+        $role = Role::firstOrCreate(['name' => 'Somente Visualização Busca']);
+        $role->syncPermissions(['lista-compra.view']);
+        $viewer->assignRole($role);
+
+        $this->actingAs($viewer)->get(route('lista-compra.buscar', ['q' => 'Arroz']))
+            ->assertForbidden();
+
+        $this->actingAs($viewer)->post(route('lista-compra.adicionarManual'), [
+            'product_ids' => [$product->id],
+            'quantities' => [$product->id => 5],
+        ])->assertForbidden();
+
+        $this->assertDatabaseCount('purchase_list_items', 0);
+    }
+
+    public function test_index_shows_manual_add_button(): void
+    {
+        $this->actingAs($this->admin)->get(route('lista-compra.index'))
+            ->assertOk()
+            ->assertSee('Adicionar Itens')
+            ->assertSee('manual-modal', false);
     }
 
     // ── Remoção ───────────────────────────────────────────────────────

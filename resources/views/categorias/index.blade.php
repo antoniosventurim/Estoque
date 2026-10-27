@@ -41,7 +41,7 @@
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('categorias.edit', $c) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('categorias.destroy', $c) }}" onsubmit="return confirm('Excluir esta categoria?')">
+                                    <form method="POST" action="{{ route('categorias.destroy', $c) }}" data-confirm-title="Excluir categoria" data-confirm-name="{{ $c->name }}" data-confirm-message="Os produtos vinculados deixarão de exibir esta categoria em seus cadastros." data-confirm-accept="Excluir categoria">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>

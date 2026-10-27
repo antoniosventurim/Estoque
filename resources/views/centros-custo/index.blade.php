@@ -46,8 +46,7 @@
                         <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $costCenters->firstItem() + $i }}</td>
                             <td class="px-3.5 py-2.5 font-medium text-mv-text">
-                                <span class="inline-block h-2 w-2 rounded-full align-middle" style="background: {{ $c->color ?? '#c8102e' }}"></span>
-                                <span class="ml-1.5">{{ $c->name }}</span>
+                                {{ $c->name }}
                             </td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ ucfirst($c->type) }}</td>
                             <td class="mono px-3.5 py-2.5 text-xs text-mv-text-secondary">{{ $c->code }}</td>
@@ -60,7 +59,7 @@
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('centros-custo.edit', $c) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('centros-custo.destroy', $c) }}" onsubmit="return confirm('Excluir este centro de custo?')">
+                                    <form method="POST" action="{{ route('centros-custo.destroy', $c) }}" data-confirm-title="Excluir centro de custo" data-confirm-name="{{ $c->name }}" data-confirm-message="Os setores ficarão indisponíveis para novas saídas e o histórico de movimentações será mantido." data-confirm-accept="Excluir centro de custo">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>

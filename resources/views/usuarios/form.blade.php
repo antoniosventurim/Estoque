@@ -30,7 +30,7 @@
                 <div class="flex flex-wrap items-center gap-2">
                     <label class="cursor-pointer select-none">
                         <input type="checkbox" name="is_admin" value="1" class="peer sr-only" {{ (bool) old('is_admin', $user->is_admin ?? false) ? 'checked' : '' }}>
-                        <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white/70 transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
+                        <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-mv-surface2 px-3 py-1.5 text-[13px] font-medium text-mv-text-secondary transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
                             <x-app.icon name="check" :size="12" />
                             Acesso total (Administrador)
                         </span>
@@ -45,7 +45,7 @@
                     @forelse ($roles as $role)
                         <label class="cursor-pointer select-none">
                             <input type="checkbox" name="roles[]" value="{{ $role->name }}" class="peer sr-only" {{ $selectedRoles->contains($role->name) ? 'checked' : '' }}>
-                            <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white/70 transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-mv-surface2 px-3 py-1.5 text-[13px] font-medium text-mv-text-secondary transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
                                 <x-app.icon name="check" :size="12" />
                                 {{ $role->name }}
                                 <span class="opacity-70">· {{ $role->permissions->count() }} permissões</span>

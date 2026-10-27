@@ -13,7 +13,21 @@ class UsuarioRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
-        $this->merge(['is_admin' => $this->boolean('is_admin')]);
+        $isAdmin = (bool) $this->user()?->is_admin;
+
+        if ($isAdmin) {
+            $this->merge(['is_admin' => $this->boolean('is_admin')]);
+        }
+
+        // Apenas administradores podem atribuir o perfil Administrador.
+        $roles = $this->input('roles', []);
+        if (is_array($roles)) {
+            $this->merge([
+                'roles' => $isAdmin
+                    ? array_values($roles)
+                    : array_values(array_filter($roles, fn ($role) => $role !== 'Administrador')),
+            ]);
+        }
     }
 
     public function rules(): array
@@ -35,6 +49,10 @@ class UsuarioRequest extends FormRequest
     public function validated($key = null, $default = null): array
     {
         $data = parent::validated($key, $default);
+
+        if (! $this->user()?->is_admin) {
+            unset($data['is_admin']);
+        }
 
         if ($this->isUpdating() && empty($data['password'])) {
             unset($data['password']);

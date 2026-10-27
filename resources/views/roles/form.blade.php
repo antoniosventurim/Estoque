@@ -41,7 +41,7 @@
                             @endphp
                             <label class="cursor-pointer select-none">
                                 <input type="checkbox" name="permissions[]" value="{{ $permission }}" class="peer sr-only" {{ $selected->contains($permission) ? 'checked' : '' }}>
-                                <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white/70 transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
+                                <span class="inline-flex items-center gap-1.5 rounded-full border border-mv-border bg-mv-surface2 px-3 py-1.5 text-[13px] font-medium text-mv-text-secondary transition-colors peer-checked:border-mv-accent peer-checked:bg-mv-accent peer-checked:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-mv-accent">
                                     <x-app.icon name="check" :size="12" />
                                     {{ $actionLabels[$action] ?? $action }}
                                 </span>

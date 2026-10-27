@@ -43,8 +43,6 @@
 
     {{-- Tabela --}}
     <x-app.card class="overflow-hidden">
-        <form method="POST" action="{{ route('produtos.bulkDestroy') }}" id="bulk-products">
-            @csrf
         <div class="overflow-x-auto">
             <table class="w-full border-collapse text-[14px]">
                 <thead>
@@ -79,7 +77,7 @@
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('produtos.edit', $p) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('produtos.destroy', $p) }}" onsubmit="return confirm('Excluir este produto?')">
+                                    <form method="POST" action="{{ route('produtos.destroy', $p) }}" data-confirm-title="Excluir produto" data-confirm-name="{{ $p->name }}" data-confirm-message="O produto será removido do estoque, junto com seu saldo atual e o histórico de movimentações deixará de aparecer nas listagens." data-confirm-accept="Excluir produto">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>
@@ -92,10 +90,12 @@
                 </tbody>
             </table>
         </div>
-        <div id="bulk-bar" class="hidden items-center justify-end gap-3 border-t border-mv-border px-4 py-3">
-            <span id="selected-count" class="text-xs text-mv-text-muted">0 selecionado(s)</span>
-            <x-app.btn type="submit" size="sm" variant="danger" icon="trash" onclick="return confirmBulkDelete()">Excluir selecionados</x-app.btn>
-        </div>
+        <form method="POST" action="{{ route('produtos.bulkDestroy') }}" id="bulk-products">
+            @csrf
+            <div id="bulk-bar" class="hidden items-center justify-end gap-3 border-t border-mv-border px-4 py-3">
+                <span id="selected-count" class="text-xs text-mv-text-muted">0 selecionado(s)</span>
+                <x-app.btn type="submit" size="sm" variant="danger" icon="trash" onclick="return confirmBulkDelete()">Excluir selecionados</x-app.btn>
+            </div>
         </form>
 
         <x-app.pagination :paginator="$products" />
@@ -105,6 +105,7 @@
         (function () {
             const selectAll = document.querySelector('.select-all-check');
             const boxes = Array.from(document.querySelectorAll('.row-checkbox'));
+            boxes.forEach(b => b.setAttribute('form', 'bulk-products'));
             const count = document.getElementById('selected-count');
             const bar = document.getElementById('bulk-bar');
             const update = () => {
@@ -124,7 +125,13 @@
 
             window.confirmBulkDelete = () => {
                 const n = boxes.filter(b => b.checked).length;
-                return n > 0 && confirm('Excluir ' + n + ' produto(s)?');
+                if (n === 0) return false;
+                const form = document.getElementById('bulk-products');
+                form.setAttribute('data-confirm-title', 'Excluir produtos');
+                form.setAttribute('data-confirm-name', n + ' produto(s) selecionado(s)');
+                form.setAttribute('data-confirm-message', 'Os produtos selecionados, seus saldos e o histórico de movimentações serão removidos do sistema.');
+                form.setAttribute('data-confirm-accept', 'Excluir produtos');
+                return true;
             };
 
             update();

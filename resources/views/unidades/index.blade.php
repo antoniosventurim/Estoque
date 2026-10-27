@@ -30,7 +30,7 @@
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">
                                     <x-app.btn as="a" href="{{ route('unidades.edit', $u) }}" size="sm" variant="secondary" icon="edit">Editar</x-app.btn>
-                                    <form method="POST" action="{{ route('unidades.destroy', $u) }}" onsubmit="return confirm('Excluir esta unidade?')">
+                                    <form method="POST" action="{{ route('unidades.destroy', $u) }}" data-confirm-title="Excluir unidade" data-confirm-name="{{ $u->name }}" data-confirm-message="Os produtos que usam esta unidade ficarão sem unidade de medida definida." data-confirm-accept="Excluir unidade">
                                         @csrf @method('DELETE')
                                         <x-app.btn type="submit" size="sm" variant="danger" icon="trash">Excluir</x-app.btn>
                                     </form>
