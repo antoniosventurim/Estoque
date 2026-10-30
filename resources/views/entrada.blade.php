@@ -30,6 +30,9 @@
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Novo estoque</p><p class="text-[14px] font-medium text-mv-success">{{ $success['after'] }} un</p></div>
                     <div><p class="text-[13px] uppercase tracking-wider text-mv-text-muted">Estoque mínimo</p><p class="text-[14px] font-medium text-mv-warning">{{ $success['min_stock'] ?? 0 }} un</p></div>
                     <div class="col-span-2 sm:col-span-1"><p class="text-[14px] text-mv-text-secondary">Adicionado por: <span class="break-words font-medium text-mv-text">{{ $success['user'] ?? '' }}</span></p></div>
+                    @if (! empty($success['expiration_date']))
+                        <div class="col-span-2 sm:col-span-1"><p class="text-[14px] text-mv-text-secondary">Validade: <span class="font-medium text-mv-text">{{ \Illuminate\Support\Carbon::parse($success['expiration_date'])->format('d/m/Y') }}</span></p></div>
+                    @endif
                 </div>
             </x-app.card>
         @endif
@@ -37,6 +40,48 @@
         {{-- Erro (registro) --}}
         @if ($error = session('error'))
             <x-app.error-card title="Não foi possível registrar" :message="$error" />
+        @endif
+
+        {{-- Alerta de validade próxima --}}
+        @if ($expiring->isNotEmpty())
+            <x-app.card id="entrada-expiring-card" class="p-5" style="border-color: color-mix(in srgb, var(--color-mv-warning) 40%, transparent); background: var(--color-mv-warning-bg, transparent)">
+                <div class="mb-3 flex items-center gap-2.5">
+                    <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-mv-warning text-white">
+                        <x-app.icon name="warning" :size="16" />
+                    </div>
+                    <div>
+                        <p class="text-[14px] font-semibold text-mv-warning">Produtos próximos do vencimento</p>
+                        <p class="text-[13px] text-mv-text-muted">Itens com validade em até 30 dias (ou já vencidos)</p>
+                    </div>
+                </div>
+                <ul class="space-y-2">
+                    @foreach ($expiring as $m)
+                        @php
+                            $days = (int) $m->expiration_date->startOfDay()->diffInDays(now()->startOfDay(), false);
+                        @endphp
+                        <li class="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-mv-border bg-mv-surface2 px-3 py-2">
+                            <div class="min-w-0">
+                                <p class="truncate text-[14px] font-medium text-mv-text">{{ $m->product?->name ?? 'Produto removido' }}</p>
+                                <p class="text-[13px] text-mv-text-muted">Estoque: {{ $m->product?->stock ?? 0 }} un</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[14px] font-semibold {{ $days < 0 ? 'text-mv-danger' : ($days <= 7 ? 'text-mv-danger' : 'text-mv-warning') }}">
+                                    {{ $m->expiration_date->format('d/m/Y') }}
+                                </p>
+                                <p class="text-[12px] {{ $days < 0 ? 'text-mv-danger' : 'text-mv-text-muted' }}">
+                                    @if ($days < 0)
+                                        Vencido há {{ abs($days) }} dia(s)
+                                    @elseif ($days === 0)
+                                        Vence hoje
+                                    @else
+                                        Vence em {{ $days }} dia(s)
+                                    @endif
+                                </p>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </x-app.card>
         @endif
 
         {{-- Passo 1: Buscar produto --}}
@@ -91,15 +136,41 @@
                         </div>
                     </div>
 
-                    <div class="mt-3">
-                        <x-app.searchable-select
-                            name="cost_center_id"
-                            label="Para qual setor? *"
-                            placeholder="Buscar curso/setor..."
-                            :required="true"
-                            :options="$costCenters->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ucfirst($c->type)])->values()->all()"
-                        />
-                    </div>
+                    @if ($product->category?->requires_expiration)
+                        <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                            <x-app.searchable-select
+                                name="cost_center_id"
+                                label="Para qual setor? *"
+                                placeholder="Buscar curso/setor..."
+                                :required="true"
+                                :options="$costCenters->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ucfirst($c->type)])->values()->all()"
+                            />
+                            <div>
+                                <label for="expiration_date" class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Data de validade *</label>
+                                <input
+                                    id="expiration_date"
+                                    name="expiration_date"
+                                    type="date"
+                                    required
+                                    value="{{ old('expiration_date') }}"
+                                    class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2 text-[14px] text-mv-text outline-none"
+                                >
+                                @error('expiration_date')
+                                    <p class="mt-1.5 text-[13px] text-mv-danger">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
+                    @else
+                        <div class="mt-3">
+                            <x-app.searchable-select
+                                name="cost_center_id"
+                                label="Para qual setor? *"
+                                placeholder="Buscar curso/setor..."
+                                :required="true"
+                                :options="$costCenters->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => ucfirst($c->type)])->values()->all()"
+                            />
+                        </div>
+                    @endif
 
                     <button type="submit" class="mt-4 flex w-full items-center justify-center gap-2 rounded-lg bg-mv-accent py-3 text-sm font-semibold text-white hover:bg-mv-accent-hover">
                         <x-app.icon name="arrow-up" :size="16" /> Registrar Entrada

@@ -24,10 +24,12 @@ class Product extends Model
         'note',
         'unit',
         'is_active',
+        'expiration_date',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'expiration_date' => 'date',
     ];
 
     protected static function booted(): void

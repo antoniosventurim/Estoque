@@ -45,6 +45,11 @@ export function initSearchableSelects(root = document) {
             if (clearBtn) clearBtn.classList.add('hidden');
             input.focus();
             openList();
+
+            box.dispatchEvent(new CustomEvent('searchable:select', {
+                detail: { id: '', label: '' },
+                bubbles: true,
+            }));
         };
 
         const openList = () => {
@@ -76,12 +81,20 @@ export function initSearchableSelects(root = document) {
 
         input.addEventListener('input', () => {
             const q = input.value.trim().toLowerCase();
+            const wasSelected = hidden.value !== '';
             hidden.value = '';
             items.forEach((b) => {
                 b.classList.toggle('hidden', !b.dataset.search.includes(q));
             });
             itemsFilter();
             optionsList.classList.remove('hidden');
+
+            if (wasSelected) {
+                box.dispatchEvent(new CustomEvent('searchable:select', {
+                    detail: { id: '', label: '' },
+                    bubbles: true,
+                }));
+            }
         });
 
         input.addEventListener('keydown', (e) => {

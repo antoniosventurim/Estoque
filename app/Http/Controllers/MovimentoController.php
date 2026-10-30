@@ -8,6 +8,7 @@ use App\Http\Requests\SaidaBatchRequest;
 use App\Http\Requests\SaidaRegisterRequest;
 use App\Models\CostCenter;
 use App\Models\Employee;
+use App\Models\Movement;
 use App\Models\Product;
 use App\Services\StockService;
 use Illuminate\Http\JsonResponse;
@@ -74,12 +75,13 @@ class MovimentoController extends Controller
     public function entrada(Request $request): View
     {
         $barcode = trim((string) $request->query('barcode'));
-        $product = $barcode !== '' ? Product::where('barcode', $barcode)->first() : null;
+        $product = $barcode !== '' ? Product::with('category')->where('barcode', $barcode)->first() : null;
         $notFound = $barcode !== '' && $product === null;
         $costCenters = CostCenter::where('is_active', true)->orderBy('type')->orderBy('name')->get();
         $products = $this->productOptions();
+        $expiring = $this->expiringProducts();
 
-        return view('entrada', compact('product', 'notFound', 'costCenters', 'products'));
+        return view('entrada', compact('product', 'notFound', 'costCenters', 'products', 'expiring'));
     }
 
     public function entradaRegister(EntradaRegisterRequest $request): RedirectResponse
@@ -90,7 +92,8 @@ class MovimentoController extends Controller
             $result = $this->stock->entrada(
                 $data['barcode'],
                 (int) $data['quantity'],
-                StockService::costCenterId($data)
+                StockService::costCenterId($data),
+                $data['expiration_date'] ?? null
             );
         } catch (DomainException $e) {
             return back()->with('error', $e->getMessage());
@@ -103,6 +106,7 @@ class MovimentoController extends Controller
             'after' => $result['after'],
             'min_stock' => $result['product']->min_stock,
             'user' => auth()->user()->name,
+            'expiration_date' => $data['expiration_date'] ?? null,
         ]);
     }
 
@@ -149,5 +153,42 @@ class MovimentoController extends Controller
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * @return \Illuminate\Support\Collection<int, object{product: Product|null, expiration_date: \Illuminate\Support\Carbon}>
+     */
+    private function expiringProducts()
+    {
+        $limit = now()->addDays(30)->toDateString();
+
+        $fromMovements = Movement::with('product')
+            ->where('type', Movement::TYPE_IN)
+            ->whereNotNull('expiration_date')
+            ->where('expiration_date', '<=', $limit)
+            ->whereHas('product', fn ($q) => $q->where('stock', '>', 0))
+            ->orderBy('expiration_date')
+            ->get()
+            ->unique('product_id');
+
+        $fromProducts = Product::whereNotNull('expiration_date')
+            ->where('expiration_date', '<=', $limit)
+            ->where('stock', '>', 0)
+            ->whereDoesntHave('movements', function ($q) use ($limit) {
+                $q->where('type', Movement::TYPE_IN)
+                    ->whereNotNull('expiration_date')
+                    ->where('expiration_date', '<=', $limit);
+            })
+            ->orderBy('expiration_date')
+            ->get()
+            ->map(fn (Product $p) => (object) [
+                'product' => $p,
+                'expiration_date' => $p->expiration_date,
+            ]);
+
+        return $fromMovements->values()
+            ->concat($fromProducts)
+            ->sortBy('expiration_date')
+            ->values();
     }
 }

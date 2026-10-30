@@ -115,7 +115,7 @@ class StockService
      *
      * @return array{product: Product, qty: int, before: int, after: int}
      */
-    public function entrada(string $barcode, int $quantity, ?int $costCenterId = null): array
+    public function entrada(string $barcode, int $quantity, ?int $costCenterId = null, ?string $expirationDate = null): array
     {
         $product = Product::where('barcode', $barcode)->first();
 
@@ -134,6 +134,7 @@ class StockService
             'stock_after' => $product->stock,
             'user_id' => auth()->id(),
             'cost_center_id' => $costCenterId,
+            'expiration_date' => $expirationDate,
         ]);
 
         return [

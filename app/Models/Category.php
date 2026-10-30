@@ -13,6 +13,11 @@ class Category extends Model
 
     protected $fillable = [
         'name',
+        'requires_expiration',
+    ];
+
+    protected $casts = [
+        'requires_expiration' => 'boolean',
     ];
 
     public function products(): HasMany

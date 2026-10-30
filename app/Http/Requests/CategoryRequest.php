@@ -15,6 +15,7 @@ class CategoryRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255', 'unique:categories,name,'.optional($this->route('category'))->id],
+            'requires_expiration' => ['sometimes', 'boolean'],
         ];
     }
 }

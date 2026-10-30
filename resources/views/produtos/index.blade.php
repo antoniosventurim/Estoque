@@ -68,7 +68,14 @@
                                     @if($p->barcode)<span class="mono text-xs text-mv-text-secondary whitespace-nowrap">{{ $p->barcode }}</span>@endif
                                 </div>
                             </td>
-                            <td class="px-3.5 py-2.5 font-medium text-mv-text">{{ $p->name }}</td>
+                            <td class="px-3.5 py-2.5 font-medium text-mv-text">
+                                {{ $p->name }}
+                                @if ($p->expiration_date)
+                                    <span class="ml-1.5 inline-flex items-center rounded-full {{ $p->expiration_date->isPast() ? 'bg-mv-danger-bg text-mv-danger' : 'bg-mv-warning/15 text-mv-warning' }} px-2 py-0.5 text-[11px] font-medium">
+                                        Val. {{ $p->expiration_date->format('d/m/Y') }}
+                                    </span>
+                                @endif
+                            </td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $p->category->name ?? '—' }}</td>
                             <td class="px-3.5 py-2.5 font-semibold {{ $p->stock <= $p->min_stock ? 'text-mv-danger' : ($p->stock <= $p->min_stock * 1.5 ? 'text-mv-warning' : 'text-mv-text') }}">{{ $p->stock }} {{ $p->unit }}</td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $p->min_stock }} {{ $p->unit }}</td>

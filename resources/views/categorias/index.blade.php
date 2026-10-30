@@ -36,7 +36,12 @@
                     @forelse ($categories as $i => $c)
                         <tr class="border-b border-mv-border hover:bg-black/[0.02] dark:hover:bg-white/[0.02]">
                             <td class="px-3.5 py-2.5 text-xs text-mv-text-muted">{{ $categories->firstItem() + $i }}</td>
-                            <td class="px-3.5 py-2.5 font-medium text-mv-text">{{ $c->name }}</td>
+                            <td class="px-3.5 py-2.5 font-medium text-mv-text">
+                                {{ $c->name }}
+                                @if ($c->requires_expiration)
+                                    <span class="ml-1.5 inline-flex items-center rounded-full bg-mv-warning/15 px-2 py-0.5 text-[11px] font-medium text-mv-warning">Validade</span>
+                                @endif
+                            </td>
                             <td class="px-3.5 py-2.5 text-mv-text-secondary">{{ $c->products_count }}</td>
                             <td class="px-3.5 py-2.5">
                                 <div class="flex items-center justify-center gap-1.5">

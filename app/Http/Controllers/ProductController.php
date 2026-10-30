@@ -47,11 +47,16 @@ class ProductController extends Controller
 
     public function create(): View
     {
+        $categories = Category::orderBy('name')->get();
+        $categoryId = old('category_id');
+        $category = $categoryId ? $categories->firstWhere('id', $categoryId) : null;
+
         return view('produtos.form', [
             'product' => null,
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => $categories,
             'units' => Unit::orderBy('name')->get(),
             'generatedBarcode' => Product::generateUniqueBarcode(),
+            'showExpiration' => (bool) ($category?->requires_expiration),
         ]);
     }
 
@@ -64,10 +69,15 @@ class ProductController extends Controller
 
     public function edit(Product $product): View
     {
+        $categories = Category::orderBy('name')->get();
+        $categoryId = old('category_id', $product->category_id);
+        $category = $categories->firstWhere('id', $categoryId);
+
         return view('produtos.form', [
             'product' => $product,
-            'categories' => Category::orderBy('name')->get(),
+            'categories' => $categories,
             'units' => Unit::orderBy('name')->get(),
+            'showExpiration' => (bool) ($category?->requires_expiration),
         ]);
     }
 

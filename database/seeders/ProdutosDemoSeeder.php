@@ -12,7 +12,10 @@ class ProdutosDemoSeeder extends Seeder
     {
         $cats = ['Escritório', 'Eletrônicos', 'Limpeza', 'Alimentos', 'Ferramentas'];
         foreach ($cats as $n) {
-            Category::updateOrCreate(['name' => $n]);
+            Category::updateOrCreate(
+                ['name' => $n],
+                ['requires_expiration' => $n === 'Alimentos']
+            );
         }
 
         $data = [

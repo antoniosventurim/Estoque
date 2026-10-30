@@ -17,8 +17,8 @@
             {{-- Seção: Informações do Produto --}}
             <div class="mb-5">
                 <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Informações do Produto</h3>
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div class="sm:col-span-2">
+                <div id="product-info-grid" class="grid grid-cols-1 gap-4 {{ $showExpiration ? 'sm:grid-cols-3' : 'sm:grid-cols-2' }}">
+                    <div id="product-name-field" class="{{ $showExpiration ? 'sm:col-span-3' : 'sm:col-span-2' }}">
                         <x-app.input label="Nome *" name="name" value="{{ old('name', $product->name ?? '') }}" placeholder="Nome do produto" required />
                     </div>
                     <x-app.searchable-select
@@ -27,7 +27,7 @@
                         placeholder="Buscar categoria..."
                         :selected="old('category_id', $product->category_id ?? '')"
                         :selected-label="old('category_id', $product->category_id ?? '') ? ($categories->firstWhere('id', old('category_id', $product->category_id))->name ?? '') : ''"
-                        :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => 'Categoria'])->values()->all()"
+                        :options="$categories->map(fn ($c) => ['id' => $c->id, 'name' => $c->name, 'sub' => $c->requires_expiration ? 'Exige validade' : 'Categoria'])->values()->all()"
                     />
                     <x-app.searchable-select
                         label="Unidade de medida"
@@ -37,7 +37,21 @@
                         :selected-label="old('unit', $product->unit ?? 'un') ? ($units->firstWhere('abbreviation', old('unit', $product->unit ?? 'un'))?->name ?? '') : ''"
                         :options="$units->map(fn ($u) => ['id' => $u->abbreviation, 'name' => $u->name, 'sub' => $u->abbreviation])->values()->all()"
                     />
-                    <div class="sm:col-span-2">
+                    <div id="expiration-date-field" class="{{ $showExpiration ? '' : 'hidden' }}">
+                        <label for="expiration_date" class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Data de validade *</label>
+                        <input
+                            id="expiration_date"
+                            name="expiration_date"
+                            type="date"
+                            {{ $showExpiration ? 'required' : '' }}
+                            value="{{ old('expiration_date', $product?->expiration_date?->toDateString() ?? '') }}"
+                            class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2.5 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-border"
+                        >
+                        @error('expiration_date')
+                            <p class="mt-1.5 text-[13px] text-mv-danger">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div id="product-note-field" class="{{ $showExpiration ? 'sm:col-span-3' : 'sm:col-span-2' }}">
                         <label for="note" class="mb-1.5 block text-xs font-medium text-mv-text-secondary">Observação</label>
                         <textarea id="note" name="note" rows="2" maxlength="500" placeholder="Anotações sobre o produto..."
                             class="w-full rounded-md border border-mv-border bg-mv-surface2 px-2.5 py-2.5 text-[14px] text-mv-text outline-none transition-colors focus:border-mv-border">{{ old('note', $product->note ?? '') }}</textarea>
@@ -148,6 +162,51 @@
                     submitBtn.textContent = 'Salvando...';
                 });
             }
+
+            const categoryRequires = @json($categories->mapWithKeys(fn ($c) => [(string) $c->id => (bool) $c->requires_expiration]));
+            const expirationField = document.getElementById('expiration-date-field');
+            const expirationInput = document.getElementById('expiration_date');
+            const categoryHidden = document.querySelector('input[name="category_id"]');
+            const infoGrid = document.getElementById('product-info-grid');
+            const nameField = document.getElementById('product-name-field');
+            const noteField = document.getElementById('product-note-field');
+
+            const toggleExpirationField = () => {
+                if (!expirationField || !expirationInput || !categoryHidden) return;
+                const requires = !!categoryRequires[String(categoryHidden.value)];
+                expirationField.classList.toggle('hidden', !requires);
+                if (requires) {
+                    expirationInput.setAttribute('required', 'required');
+                } else {
+                    expirationInput.removeAttribute('required');
+                    expirationInput.value = '';
+                }
+
+                if (infoGrid) {
+                    infoGrid.classList.toggle('sm:grid-cols-3', requires);
+                    infoGrid.classList.toggle('sm:grid-cols-2', !requires);
+                }
+                if (nameField) {
+                    nameField.classList.toggle('sm:col-span-3', requires);
+                    nameField.classList.toggle('sm:col-span-2', !requires);
+                }
+                if (noteField) {
+                    noteField.classList.toggle('sm:col-span-3', requires);
+                    noteField.classList.toggle('sm:col-span-2', !requires);
+                }
+            };
+
+            document.addEventListener('searchable:select', (e) => {
+                const target = e.target;
+                if (target && target.contains && target.contains(categoryHidden)) {
+                    toggleExpirationField();
+                }
+            });
+
+            if (categoryHidden) {
+                categoryHidden.addEventListener('change', toggleExpirationField);
+            }
+            toggleExpirationField();
 
             const input = document.getElementById('image');
             const holder = document.getElementById('product-image-preview');

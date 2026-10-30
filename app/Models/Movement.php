@@ -22,6 +22,11 @@ class Movement extends Model
         'stock_after',
         'user_id',
         'employee_id',
+        'expiration_date',
+    ];
+
+    protected $casts = [
+        'expiration_date' => 'date',
     ];
 
     public function product(): BelongsTo
