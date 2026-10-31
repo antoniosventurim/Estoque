@@ -9,7 +9,7 @@
 
     <x-app.errors />
 
-    <x-app.card class="p-5">
+    <x-app.card class="-mx-4 p-5 sm:-mx-6">
         <form method="POST" action="{{ $product ? route('produtos.update', $product) : route('produtos.store') }}" enctype="multipart/form-data">
             @csrf
             @if ($product)@method('PUT')@endif
@@ -62,7 +62,7 @@
             {{-- Seção: Estoque --}}
             <div class="mb-5">
                 <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-mv-text-muted">Controle de Estoque</h3>
-                <div class="flex gap-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div class="flex-1">
                         @if ($product)
                             <div>
