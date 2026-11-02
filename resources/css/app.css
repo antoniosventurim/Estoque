@@ -159,6 +159,13 @@ select {
     --color-mv-avatar-op: #7c3aed;
 }
 
+/* Status badges com fundo vermelho/escuro: texto branco no tema escuro */
+.dark span.bg-mv-accent-soft,
+.dark span.bg-mv-warning-bg,
+.dark span.bg-mv-danger-bg {
+    color: #ffffff !important;
+}
+
 .dv-from,
 .dv-to {
     margin-bottom: 0 !important;

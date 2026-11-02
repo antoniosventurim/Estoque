@@ -3,7 +3,7 @@
     $styles = [
         'primary' => 'bg-mv-accent text-white hover:bg-mv-accent-hover',
         'secondary' => 'bg-mv-surface2 text-mv-text border border-mv-border hover:border-mv-border-hover',
-        'danger' => 'bg-mv-danger-bg text-mv-danger border border-transparent hover:bg-mv-danger hover:text-white',
+        'danger' => 'bg-mv-danger text-white border border-transparent hover:bg-mv-danger-solid hover:text-white',
         'ghost' => 'bg-transparent text-mv-text-secondary border border-mv-border hover:text-mv-text hover:border-mv-border-hover',
         'back' => 'bg-mv-accent text-white border border-transparent hover:bg-mv-accent-hover',
     ];
